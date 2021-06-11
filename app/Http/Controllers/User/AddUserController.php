@@ -22,7 +22,7 @@ class AddUserController extends Controller
             'name' => 'required|string',
             'email' => 'required|string',
             'password' => 'required|string',
-            'publicRegistry' => 'required|string',
+            'document' => 'required|string',
             'type' => 'required|int'
         ]);
 
@@ -31,7 +31,7 @@ class AddUserController extends Controller
                 $request->name,
                 $request->email,
                 $request->password,
-                $request->publicRegistry,
+                $request->document,
                 $request->type
             ]);
 

@@ -15,7 +15,7 @@ class DbAddUserTest extends TestCase
             'name' => 'any_name',
             'email' => 'any_email',
             'password' => 'any_password',
-            'publicRegistry' => 'any_public_registry',
+            'document' => 'any_document',
             'type' => 1
         ];
     }

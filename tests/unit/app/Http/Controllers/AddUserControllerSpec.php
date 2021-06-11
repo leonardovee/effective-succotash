@@ -17,7 +17,7 @@ class AddUserControllerTest extends TestCase
             'name' => 'any_name',
             'email' => 'any_email',
             'password' => 'any_password',
-            'publicRegistry' => 'any_public_registry',
+            'document' => 'any_document',
             'type' => 1
         ]);
     }
@@ -50,7 +50,7 @@ class AddUserControllerTest extends TestCase
             $request->name,
             $request->email,
             $request->password,
-            $request->publicRegistry,
+            $request->document,
             $request->type
         ]);
 
