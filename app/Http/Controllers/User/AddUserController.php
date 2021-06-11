@@ -27,7 +27,7 @@ class AddUserController extends Controller
         ]);
 
         try {
-            $this->dbAddUser->add([
+            $userId = $this->dbAddUser->add([
                 $request->name,
                 $request->email,
                 $request->password,
@@ -35,7 +35,9 @@ class AddUserController extends Controller
                 $request->type
             ]);
 
-            return response()->json([]);
+            return response()->json([
+                'id' => $userId
+            ], 201);
         } catch (Exception $exception) {
             abort(500, 'we couldn\'t process your request');
         }
