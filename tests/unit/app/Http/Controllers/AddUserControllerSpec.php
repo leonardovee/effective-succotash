@@ -71,4 +71,19 @@ class AddUserControllerTest extends TestCase
 
         $this->sut->handle($request);
     }
+
+    public function test_should_return_user_id_on_sucess()
+    {
+        $this->makeSut();
+
+        $request = $this->makeRequest();
+
+        $anyUserId = 2503;
+        $this->stub->expects($this->once())->method('add')->willReturn($anyUserId);
+
+        $response = $this->sut->handle($request);
+
+        $this->assertSame($anyUserId, $response->getData()->id);
+        $this->assertSame(201, $response->getStatusCode());
+    }
 }
