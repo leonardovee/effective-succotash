@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Exception;
 
 class AddUserController extends Controller
 {
@@ -25,14 +26,18 @@ class AddUserController extends Controller
             'type' => 'required|int'
         ]);
 
-        $this->dbAddUser->add([
-            $request->name,
-            $request->email,
-            $request->password,
-            $request->publicRegistry,
-            $request->type
-        ]);
+        try {
+            $this->dbAddUser->add([
+                $request->name,
+                $request->email,
+                $request->password,
+                $request->publicRegistry,
+                $request->type
+            ]);
 
-        return response()->json([]);
+            return response()->json([]);
+        } catch (Exception $exception) {
+            abort(500, 'we couldn\'t process your request');
+        }
     }
 }
