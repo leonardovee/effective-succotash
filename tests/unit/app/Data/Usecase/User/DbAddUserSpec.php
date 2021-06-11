@@ -37,4 +37,19 @@ class DbAddUserTest extends TestCase
 
         $this->sut->add($request);
     }
+
+    public function test_should_throw_if_add_user_repository_throws()
+    {
+        $this->makeSut();
+
+        $request = $this->makeRequest();
+
+        $this->stub->expects($this->once())->method('add')->will(
+            $this->throwException(new Exception)
+        );
+
+        $this->expectException(Exception::class);
+
+        $this->sut->add($request);
+    }
 }
