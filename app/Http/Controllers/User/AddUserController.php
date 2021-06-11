@@ -8,6 +8,13 @@ use Illuminate\Http\Request;
 
 class AddUserController extends Controller
 {
+    private $dbAddUser;
+
+    public function __construct($dbAddUser)
+    {
+        $this->dbAddUser = $dbAddUser;
+    }
+
     public function handle(Request $request): JsonResponse
     {
         $this->validate($request, [
@@ -17,5 +24,15 @@ class AddUserController extends Controller
             'publicRegistry' => 'required|string',
             'type' => 'required|int'
         ]);
+
+        $this->dbAddUser->add([
+            $request->name,
+            $request->email,
+            $request->password,
+            $request->publicRegistry,
+            $request->type
+        ]);
+
+        return response()->json([]);
     }
 }
