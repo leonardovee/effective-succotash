@@ -4,6 +4,7 @@ use App\Data\Usecase\Transaction\DbCreateTransaction;
 use App\Infra\Db\MySql\Withdraw\GetWithdrawsRepository;
 use App\Infra\Db\MySql\Deposit\GetDepositsRepository;
 use App\Infra\Db\MySql\Payer\GetPayerTypeRepository;
+use App\Infra\Db\MySql\Transaction\AddTransactionRepository;
 use App\Infra\Web\Authorizer\GetTransactionAuthorizerRepository;
 use App\Domain\Model\Payer;
 use App\Domain\Model\Deposit;
@@ -21,6 +22,7 @@ class DbCreateTransactionTest extends TestCase
     private $getWithdrawsRepositoryStub;
     private $getDepositsRepositoryStub;
     private $getTransactionAuthorizerRepositoryStub;
+    private $addTransactionRepositoryStub;
 
     private function makeSut()
     {
@@ -43,12 +45,14 @@ class DbCreateTransactionTest extends TestCase
         $this->getDepositsRepositoryStub = $this->createMock(GetDepositsRepository::class);
         $this->getTransactionAuthorizerRepositoryStub = $this->createMock(GetTransactionAuthorizerRepository::class);
         $this->getTransactionAuthorizerRepositoryStub->method('get')->willReturn(true);
+        $this->addTransactionRepositoryStub = $this->createMock(AddTransactionRepository::class);
 
         $this->sut = new DbCreateTransaction(
             $this->getPayerTypeRepositoryStub,
             $this->getWithdrawsRepositoryStub,
             $this->getDepositsRepositoryStub,
-            $this->getTransactionAuthorizerRepositoryStub
+            $this->getTransactionAuthorizerRepositoryStub,
+            $this->addTransactionRepositoryStub
         );
     }
 
@@ -145,10 +149,23 @@ class DbCreateTransactionTest extends TestCase
             $this->getPayerTypeRepositoryStub,
             $this->getWithdrawsRepositoryStub,
             $this->getDepositsRepositoryStub,
-            $this->getTransactionAuthorizerRepositoryStub
+            $this->getTransactionAuthorizerRepositoryStub,
+            $this->addTransactionRepositoryStub
         );
 
         $this->expectException(Exception::class);
+
+        $this->sut->create($this->deposit, $this->withdraw);
+    }
+
+    public function test_should_call_add_transaction_repository_with_correct_values()
+    {
+        $this->makeSut();
+
+        $this->addTransactionRepositoryStub
+            ->expects($this->once())
+            ->method('add')
+            ->with($this->deposit, $this->withdraw);
 
         $this->sut->create($this->deposit, $this->withdraw);
     }
