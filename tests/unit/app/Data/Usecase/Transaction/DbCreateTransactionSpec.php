@@ -3,7 +3,7 @@
 use App\Data\Usecase\Transaction\DbCreateTransaction;
 use App\Infra\Db\MySql\Withdraw\WithdrawRepository;
 use App\Infra\Db\MySql\Deposit\DepositRepository;
-use App\Infra\Db\MySql\Transaction\AddTransactionRepository;
+use App\Infra\Db\MySql\Transaction\TransactionRepository;
 use App\Infra\Web\Authorizer\TransactionAuthorizerRepository;
 use App\Domain\Model\Payer;
 use App\Domain\Model\Deposit;
@@ -22,7 +22,7 @@ class DbCreateTransactionTest extends TestCase
     private $withdrawRepositoryStub;
     private $depositRepositoryStub;
     private $transactionAuthorizerRepositoryStub;
-    private $addTransactionRepositoryStub;
+    private $transactionRepositoryStub;
 
     private function makeSut()
     {
@@ -45,14 +45,14 @@ class DbCreateTransactionTest extends TestCase
         $this->depositRepositoryStub = $this->createMock(DepositRepository::class);
         $this->transactionAuthorizerRepositoryStub = $this->createMock(TransactionAuthorizerRepository::class);
         $this->transactionAuthorizerRepositoryStub->method('authorize')->willReturn(true);
-        $this->addTransactionRepositoryStub = $this->createMock(AddTransactionRepository::class);
+        $this->transactionRepositoryStub = $this->createMock(TransactionRepository::class);
 
         $this->sut = new DbCreateTransaction(
             $this->payerRepositoryStub,
             $this->withdrawRepositoryStub,
             $this->depositRepositoryStub,
             $this->transactionAuthorizerRepositoryStub,
-            $this->addTransactionRepositoryStub
+            $this->transactionRepositoryStub
         );
     }
 
@@ -150,7 +150,7 @@ class DbCreateTransactionTest extends TestCase
             $this->withdrawRepositoryStub,
             $this->depositRepositoryStub,
             $this->transactionAuthorizerRepositoryStub,
-            $this->addTransactionRepositoryStub
+            $this->transactionRepositoryStub
         );
 
         $this->expectException(Exception::class);
@@ -162,7 +162,7 @@ class DbCreateTransactionTest extends TestCase
     {
         $this->makeSut();
 
-        $this->addTransactionRepositoryStub
+        $this->transactionRepositoryStub
             ->expects($this->once())
             ->method('add')
             ->with($this->deposit, $this->withdraw);
@@ -174,7 +174,7 @@ class DbCreateTransactionTest extends TestCase
     {
         $this->makeSut();
 
-        $this->addTransactionRepositoryStub
+        $this->transactionRepositoryStub
             ->expects($this->once())
             ->method('add')
             ->will($this->throwException(new Exception()));
