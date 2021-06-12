@@ -35,7 +35,7 @@ class TransactionRepository implements AddTransactionRepository
             DB::commit();
         } catch (Throwable $error) {
             DB::rollBack();
-            throw new Exception();
+            throw new Exception(`Something went wrong with the transaction`);
         }
 
         $result = new Transaction();
