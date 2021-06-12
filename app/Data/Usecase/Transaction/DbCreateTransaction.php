@@ -28,7 +28,7 @@ class DbCreateTransaction implements CreateTransaction
     {
         $payerType = $this->payerRepository->getPayerType($withdraw->user);
         if ($payerType === 1) {
-            throw new Exception();
+            throw new Exception('Bussiness shouldn\'t pay');
         }
 
         $withdraws = $this->withdrawRepository->getWithdraws($withdraw->user);
@@ -36,12 +36,12 @@ class DbCreateTransaction implements CreateTransaction
         $balance = $deposits - $withdraws;
 
         if ($withdraw->amount > $balance) {
-            throw new Exception();
+            throw new Exception('Not enought balance');
         }
 
         $isTransactionAuthorized = $this->transactionAuthorizerRepository->authorize($deposit, $withdraw);
         if (!$isTransactionAuthorized) {
-            throw new Exception();
+            throw new Exception('Not authorized');
         }
 
         return $this->transactionRepository->add($deposit, $withdraw);
