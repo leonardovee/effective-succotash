@@ -3,15 +3,15 @@
 namespace App\Factories\Controllers;
 
 use App\Data\Usecase\User\DbAddUser;
-use App\Http\Controllers\User\AddUserController;
+use App\Http\Controllers\User\UserController;
 use App\Infra\Db\MySql\User\AddUserRepository;
 
-class AddUserControllerFactory
+class UserControllerFactory
 {
     public static function make()
     {
         $addUserRepository = new AddUserRepository();
         $dbAddUser = new DbAddUser($addUserRepository);
-        return new AddUserController($dbAddUser);
+        return new UserController($dbAddUser);
     }
 }

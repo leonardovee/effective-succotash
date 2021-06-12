@@ -8,7 +8,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Exception;
 
-class AddUserController extends Controller
+class UserController extends Controller
 {
     private $dbAddUser;
 

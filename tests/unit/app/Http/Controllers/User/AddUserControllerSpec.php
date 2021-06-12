@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\User\AddUserController;
+use App\Http\Controllers\User\UserController;
 use App\Data\Usecase\User\DbAddUser;
 use App\Domain\Model\User;
 use Illuminate\Http\Request;
@@ -8,7 +8,7 @@ use Illuminate\Validation\ValidationException;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
-class AddUserControllerTest extends TestCase
+class UserControllerTest extends TestCase
 {
     use DatabaseMigrations;
 
@@ -30,7 +30,7 @@ class AddUserControllerTest extends TestCase
     {
         $this->stub = $this->createMock(DbAddUser::class);
 
-        $this->sut = new AddUserController($this->stub);
+        $this->sut = new UserController($this->stub);
     }
 
     public function test_should_return_unprocessable_entity_if_validation_fails()
