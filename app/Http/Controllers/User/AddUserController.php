@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Domain\Model\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -27,13 +28,15 @@ class AddUserController extends Controller
         ]);
 
         try {
-            $userId = $this->dbAddUser->add([
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => $request->password,
-                'document' => $request->document,
-                'type' => $request->type
-            ]);
+            $user = new User();
+
+            $user->name = $request->name;
+            $user->email = $request->email;
+            $user->password = $request->password;
+            $user->document = $request->document;
+            $user->type = $request->type;
+
+            $userId = $this->dbAddUser->add($user);
 
             return response()->json([
                 'id' => $userId

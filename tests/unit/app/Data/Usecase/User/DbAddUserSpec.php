@@ -1,23 +1,25 @@
 <?php
 
 use App\Data\Usecase\User\DbAddUser;
+use App\Domain\Model\User;
 use App\Infra\Db\MySql\User\AddUserRepository;
-use Illuminate\Http\Request;
 
 class DbAddUserTest extends TestCase
 {
     private $sut;
     private $stub;
 
-    private function makeRequest(): array
+    private function makeUserData(): User
     {
-        return [
-            'name' => 'any_name',
-            'email' => 'any_email',
-            'password' => 'any_password',
-            'document' => 'any_document',
-            'type' => 1
-        ];
+        $user = new User();
+
+        $user->name = 'any_name';
+        $user->email = 'any_email';
+        $user->password = 'any_password';
+        $user->document = 'any_document';
+        $user->type = 1;
+
+        return $user;
     }
 
     private function makeSut()
@@ -31,18 +33,18 @@ class DbAddUserTest extends TestCase
     {
         $this->makeSut();
 
-        $request = $this->makeRequest();
+        $userData = $this->makeUserData();
 
-        $this->stub->expects($this->once())->method('add')->with($request);
+        $this->stub->expects($this->once())->method('add')->with($userData)->willReturn(1);
 
-        $this->sut->add($request);
+        $this->sut->add($userData);
     }
 
     public function test_should_throw_if_add_user_repository_throws()
     {
         $this->makeSut();
 
-        $request = $this->makeRequest();
+        $userData = $this->makeUserData();
 
         $this->stub->expects($this->once())->method('add')->will(
             $this->throwException(new Exception)
@@ -50,6 +52,6 @@ class DbAddUserTest extends TestCase
 
         $this->expectException(Exception::class);
 
-        $this->sut->add($request);
+        $this->sut->add($userData);
     }
 }

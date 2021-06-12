@@ -1,5 +1,6 @@
 <?php
 
+use App\Domain\Model\User;
 use App\Infra\Db\MySql\User\AddUserRepository;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 
@@ -10,15 +11,17 @@ class AddUserRepositoryTest extends TestCase
     private $sut;
     private $stub;
 
-    private function makeUserData(): array
+    private function makeUserData(): User
     {
-        return [
-            'name' => 'any_name',
-            'email' => 'any_email',
-            'password' => 'any_password',
-            'document' => 'any_document',
-            'type' => 1
-        ];
+        $user = new User();
+
+        $user->name = 'any_name';
+        $user->email = 'any_email';
+        $user->password = 'any_password';
+        $user->document = 'any_document';
+        $user->type = 1;
+
+        return $user;
     }
 
     private function makeSut()
@@ -30,11 +33,16 @@ class AddUserRepositoryTest extends TestCase
     {
         $this->makeSut();
 
-        $request = $this->makeUserData();
+        $userData = $this->makeUserData();
 
-        $this->sut->add($request);
+        $this->sut->add($userData);
 
-        unset($request['password']);
-        $this->seeInDatabase('user', $request);
+        unset($userData->password);
+        $this->seeInDatabase('user', [
+            'name' => $userData->name,
+            'email' => $userData->email,
+            'document' => $userData->document,
+            'type' => $userData->type
+        ]);
     }
 }

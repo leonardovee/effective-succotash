@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\User\AddUserController;
 use App\Data\Usecase\User\DbAddUser;
+use App\Domain\Model\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Laravel\Lumen\Testing\DatabaseMigrations;
@@ -49,13 +50,15 @@ class AddUserControllerTest extends TestCase
 
         $request = $this->makeRequest();
 
-        $this->stub->expects($this->once())->method('add')->with([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => $request->password,
-            'document' => $request->document,
-            'type' => $request->type
-        ]);
+        $user = new User();
+
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->password = $request->password;
+        $user->document = $request->document;
+        $user->type = $request->type;
+
+        $this->stub->expects($this->once())->method('add')->with($user);
 
         $this->sut->handle($request);
     }
