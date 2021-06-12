@@ -19,11 +19,11 @@ class AddUserController extends Controller
     public function handle(Request $request): JsonResponse
     {
         $this->validate($request, [
-            'name' => 'required|string',
-            'email' => 'required|unique:user|string',
-            'password' => 'required|string',
-            'document' => 'required|unique:user|string',
-            'type' => 'required|int'
+            'name' => 'required|string|max:255',
+            'email' => 'required|unique:user|string|max:255',
+            'password' => 'required|string|max:255',
+            'document' => 'required|unique:user|string|max:14',
+            'type' => 'required|int|max:2'
         ]);
 
         try {
