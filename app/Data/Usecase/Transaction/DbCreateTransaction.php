@@ -34,7 +34,10 @@ class DbCreateTransaction implements CreateTransaction
         if ($withdraw->amount > $balance) {
             throw new Exception();
         }
-        $this->getTransactionAuthorizerRepository->get($deposit, $withdraw);
+        $isTransactionAuthorized = $this->getTransactionAuthorizerRepository->get($deposit, $withdraw);
+        if (!$isTransactionAuthorized) {
+            throw new Exception();
+        }
         return new Transaction();
     }
 }
