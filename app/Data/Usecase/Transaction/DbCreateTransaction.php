@@ -14,12 +14,14 @@ class DbCreateTransaction implements CreateTransaction
         $getPayerTypeRepository,
         $getWithdrawsRepository,
         $getDepositsRepository,
-        $getTransactionAuthorizerRepository
+        $getTransactionAuthorizerRepository,
+        $addTransactionRepository
     ) {
         $this->getPayerTypeRepository = $getPayerTypeRepository;
         $this->getWithdrawsRepository = $getWithdrawsRepository;
         $this->getDepositsRepository = $getDepositsRepository;
         $this->getTransactionAuthorizerRepository = $getTransactionAuthorizerRepository;
+        $this->addTransactionRepository = $addTransactionRepository;
     }
 
     public function create (Deposit $deposit, Withdraw $withdraw): Transaction
@@ -28,16 +30,20 @@ class DbCreateTransaction implements CreateTransaction
         if ($payerType === 1) {
             throw new Exception();
         }
+
         $withdraws = $this->getWithdrawsRepository->get($withdraw->user);
         $deposits = $this->getDepositsRepository->get($withdraw->user);
         $balance = $deposits - $withdraws;
+
         if ($withdraw->amount > $balance) {
             throw new Exception();
         }
+
         $isTransactionAuthorized = $this->getTransactionAuthorizerRepository->get($deposit, $withdraw);
         if (!$isTransactionAuthorized) {
             throw new Exception();
         }
-        return new Transaction();
+
+        return $this->addTransactionRepository->add($deposit, $withdraw);
     }
 }
