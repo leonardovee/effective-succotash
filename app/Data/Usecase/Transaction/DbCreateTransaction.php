@@ -10,14 +10,19 @@ use Exception;
 
 class DbCreateTransaction implements CreateTransaction
 {
-    public function __construct($getWithdrawsRepository, $getDepositsRepository)
-    {
+    public function __construct(
+        $getPayerTypeRepository,
+        $getWithdrawsRepository,
+        $getDepositsRepository
+    ) {
+        $this->getPayerTypeRepository = $getPayerTypeRepository;
         $this->getWithdrawsRepository = $getWithdrawsRepository;
         $this->getDepositsRepository = $getDepositsRepository;
     }
 
     public function create (Deposit $deposit, Withdraw $withdraw): Transaction
     {
+        $this->getPayerTypeRepository->get($withdraw->user);
         $withdraws = $this->getWithdrawsRepository->get($withdraw->user);
         $deposits = $this->getDepositsRepository->get($withdraw->user);
         $balance = $deposits - $withdraws;
