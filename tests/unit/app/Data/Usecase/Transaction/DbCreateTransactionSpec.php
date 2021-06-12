@@ -1,7 +1,7 @@
 <?php
 
 use App\Data\Usecase\Transaction\DbCreateTransaction;
-use App\Infra\Db\MySql\Withdraw\GetWithdrawsRepository;
+use App\Infra\Db\MySql\Withdraw\WithdrawRepository;
 use App\Infra\Db\MySql\Deposit\DepositRepository;
 use App\Infra\Db\MySql\Payer\GetPayerTypeRepository;
 use App\Infra\Db\MySql\Transaction\AddTransactionRepository;
@@ -19,7 +19,7 @@ class DbCreateTransactionTest extends TestCase
     private $withdraw;
     private $deposit;
     private $getPayerTypeRepositoryStub;
-    private $getWithdrawsRepositoryStub;
+    private $withdrawRepositoryStub;
     private $depositRepositoryStub;
     private $getTransactionAuthorizerRepositoryStub;
     private $addTransactionRepositoryStub;
@@ -41,7 +41,7 @@ class DbCreateTransactionTest extends TestCase
         $this->deposit->amount = 0;
 
         $this->getPayerTypeRepositoryStub = $this->createMock(GetPayerTypeRepository::class);
-        $this->getWithdrawsRepositoryStub = $this->createMock(GetWithdrawsRepository::class);
+        $this->withdrawRepositoryStub = $this->createMock(WithdrawRepository::class);
         $this->depositRepositoryStub = $this->createMock(DepositRepository::class);
         $this->getTransactionAuthorizerRepositoryStub = $this->createMock(GetTransactionAuthorizerRepository::class);
         $this->getTransactionAuthorizerRepositoryStub->method('get')->willReturn(true);
@@ -49,7 +49,7 @@ class DbCreateTransactionTest extends TestCase
 
         $this->sut = new DbCreateTransaction(
             $this->getPayerTypeRepositoryStub,
-            $this->getWithdrawsRepositoryStub,
+            $this->withdrawRepositoryStub,
             $this->depositRepositoryStub,
             $this->getTransactionAuthorizerRepositoryStub,
             $this->addTransactionRepositoryStub
@@ -87,9 +87,9 @@ class DbCreateTransactionTest extends TestCase
     {
         $this->makeSut();
 
-        $this->getWithdrawsRepositoryStub
+        $this->withdrawRepositoryStub
             ->expects($this->once())
-            ->method('get')
+            ->method('getWithdraws')
             ->with($this->payer->id);
 
         $this->sut->create($this->deposit, $this->withdraw);
@@ -116,9 +116,9 @@ class DbCreateTransactionTest extends TestCase
             ->method('getDeposits')
             ->willReturn(1000);
 
-        $this->getWithdrawsRepositoryStub
+        $this->withdrawRepositoryStub
             ->expects($this->once())
-            ->method('get')
+            ->method('getWithdraws')
             ->willReturn(5000);
 
         $this->expectException(Exception::class);
@@ -147,7 +147,7 @@ class DbCreateTransactionTest extends TestCase
 
         $this->sut = new DbCreateTransaction(
             $this->getPayerTypeRepositoryStub,
-            $this->getWithdrawsRepositoryStub,
+            $this->withdrawRepositoryStub,
             $this->depositRepositoryStub,
             $this->getTransactionAuthorizerRepositoryStub,
             $this->addTransactionRepositoryStub
