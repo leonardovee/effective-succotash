@@ -169,4 +169,18 @@ class DbCreateTransactionTest extends TestCase
 
         $this->sut->create($this->deposit, $this->withdraw);
     }
+
+    public function test_should_throw_if_add_transaction_repository_throws()
+    {
+        $this->makeSut();
+
+        $this->addTransactionRepositoryStub
+            ->expects($this->once())
+            ->method('add')
+            ->will($this->throwException(new Exception()));
+
+        $this->expectException(Exception::class);
+
+        $this->sut->create($this->deposit, $this->withdraw);
+    }
 }
