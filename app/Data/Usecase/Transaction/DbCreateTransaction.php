@@ -11,13 +11,13 @@ use Exception;
 class DbCreateTransaction implements CreateTransaction
 {
     public function __construct(
-        $getPayerTypeRepository,
+        $payerRepository,
         $withdrawRepository,
         $depositsRepository,
         $getTransactionAuthorizerRepository,
         $addTransactionRepository
     ) {
-        $this->getPayerTypeRepository = $getPayerTypeRepository;
+        $this->payerRepository = $payerRepository;
         $this->withdrawRepository = $withdrawRepository;
         $this->depositsRepository = $depositsRepository;
         $this->getTransactionAuthorizerRepository = $getTransactionAuthorizerRepository;
@@ -26,7 +26,7 @@ class DbCreateTransaction implements CreateTransaction
 
     public function create (Deposit $deposit, Withdraw $withdraw): Transaction
     {
-        $payerType = $this->getPayerTypeRepository->get($withdraw->user);
+        $payerType = $this->payerRepository->getPayerType($withdraw->user);
         if ($payerType === 1) {
             throw new Exception();
         }

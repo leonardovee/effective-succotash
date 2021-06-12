@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Infra\Db\MySql\Deposit;
+
 use App\Data\Protocols\Db\MySql\Deposit\GetDepositsRepository;
 use App\Models\Deposit;
 
