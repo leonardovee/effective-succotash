@@ -59,6 +59,21 @@ class DbCreateTransactionTest extends TestCase
         $this->sut->create($this->deposit, $this->withdraw);
     }
 
+    public function test_should_throw_if_player_type_is_business()
+    {
+        $this->makeSut();
+
+        $this->getPayerTypeRepositoryStub
+            ->expects($this->once())
+            ->method('get')
+            ->with($this->payer->id)
+            ->willReturn(1);
+
+        $this->expectException(Exception::class);
+
+        $this->sut->create($this->deposit, $this->withdraw);
+    }
+
     public function test_should_call_get_withdraws_repository_with_correct_values()
     {
         $this->makeSut();
