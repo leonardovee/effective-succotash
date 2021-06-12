@@ -1,7 +1,9 @@
 <?php
 
+use App\Data\Usecase\Transaction\DbCreateTransaction;
+use App\Domain\Model\Deposit;
+use App\Domain\Model\Withdraw;
 use App\Http\Controllers\Transaction\TransactionController;
-use App\Data\Usecase\User\DbAddUser;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
@@ -10,9 +12,26 @@ class TransactionControllerTest extends TestCase
     private $sut;
     private $stub;
 
+    private function makeRequest(): Request
+    {
+        return new Request([
+            'payer' => 1,
+            'payee' => 2,
+            'amount' => 10.00
+        ]);
+    }
+
     private function makeSut()
     {
-        $this->stub = $this->createMock(DbAddUser::class);
+        $this->stub = $this->createMock(DbCreateTransaction::class);
+
+        $this->deposit = new Deposit();
+        $this->deposit->user = 2;
+        $this->deposit->amount = 10.00;
+
+        $this->withdraw = new Withdraw();
+        $this->withdraw->user = 1;
+        $this->withdraw->amount = 10.00;
 
         $this->sut = new TransactionController($this->stub);
     }
@@ -24,6 +43,18 @@ class TransactionControllerTest extends TestCase
         $request = new Request();
 
         $this->expectException(ValidationException::class);
+
+        $this->sut->handle($request);
+    }
+
+
+    public function test_should_call_db_create_transaction_with_correct_values()
+    {
+        $this->makeSut();
+
+        $request = $this->makeRequest();
+
+        $this->stub->expects($this->once())->method('create')->with($this->deposit, $this->withdraw);
 
         $this->sut->handle($request);
     }
