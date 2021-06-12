@@ -3,6 +3,7 @@
 use App\Data\Usecase\Transaction\DbCreateTransaction;
 use App\Infra\Db\MySql\Withdraw\GetWithdrawsRepository;
 use App\Infra\Db\MySql\Deposit\GetDepositsRepository;
+use App\Infra\Db\MySql\Payer\GetPayerTypeRepository;
 use App\Domain\Model\Payer;
 use App\Domain\Model\Deposit;
 use App\Domain\Model\Payee;
@@ -15,6 +16,7 @@ class DbCreateTransactionTest extends TestCase
     private $payee;
     private $withdraw;
     private $deposit;
+    private $getPayerTypeRepositoryStub;
     private $getWithdrawsRepositoryStub;
     private $getDepositsRepositoryStub;
 
@@ -28,19 +30,33 @@ class DbCreateTransactionTest extends TestCase
 
         $this->withdraw = new Withdraw();
         $this->withdraw->user = $this->payer->id;
-        $this->withdraw->amount = 100;
+        $this->withdraw->amount = 0;
 
         $this->deposit = new Deposit();
         $this->deposit->user = $this->payee->id;
-        $this->deposit->amount = 100;
+        $this->deposit->amount = 0;
 
+        $this->getPayerTypeRepositoryStub = $this->createMock(GetPayerTypeRepository::class);
         $this->getWithdrawsRepositoryStub = $this->createMock(GetWithdrawsRepository::class);
         $this->getDepositsRepositoryStub = $this->createMock(GetDepositsRepository::class);
 
         $this->sut = new DbCreateTransaction(
+            $this->getPayerTypeRepositoryStub,
             $this->getWithdrawsRepositoryStub,
             $this->getDepositsRepositoryStub
         );
+    }
+
+    public function test_should_call_get_payer_type_repository_with_correct_values()
+    {
+        $this->makeSut();
+
+        $this->getPayerTypeRepositoryStub
+            ->expects($this->once())
+            ->method('get')
+            ->with($this->payer->id);
+
+        $this->sut->create($this->deposit, $this->withdraw);
     }
 
     public function test_should_call_get_withdraws_repository_with_correct_values()
@@ -63,6 +79,25 @@ class DbCreateTransactionTest extends TestCase
             ->expects($this->once())
             ->method('get')
             ->with($this->payer->id);
+
+        $this->sut->create($this->deposit, $this->withdraw);
+    }
+
+    public function test_should_throw_if_payer_dont_have_enought_balance_to_payee()
+    {
+        $this->makeSut();
+
+        $this->getDepositsRepositoryStub
+            ->expects($this->once())
+            ->method('get')
+            ->willReturn(1000);
+
+        $this->getWithdrawsRepositoryStub
+            ->expects($this->once())
+            ->method('get')
+            ->willReturn(5000);
+
+        $this->expectException(Exception::class);
 
         $this->sut->create($this->deposit, $this->withdraw);
     }
