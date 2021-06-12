@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Transaction;
 use App\Domain\Model\Deposit;
 use App\Domain\Model\Withdraw;
 use App\Http\Controllers\Controller;
+use Exception;
 use Illuminate\Http\Request;
 
 class TransactionController extends Controller
@@ -22,14 +23,18 @@ class TransactionController extends Controller
             'amount' => 'required|numeric'
         ]);
 
-        $deposit = new Deposit();
-        $deposit->user = $request->payee;
-        $deposit->amount = $request->amount;
+        try {
+            $deposit = new Deposit();
+            $deposit->user = $request->payee;
+            $deposit->amount = $request->amount;
 
-        $withdraw = new Withdraw();
-        $withdraw->user = $request->payer;
-        $withdraw->amount = $request->amount;
+            $withdraw = new Withdraw();
+            $withdraw->user = $request->payer;
+            $withdraw->amount = $request->amount;
 
-        $this->dbCreateTransaction->create($deposit, $withdraw);
+            $this->dbCreateTransaction->create($deposit, $withdraw);
+        } catch (Exception $exception) {
+            abort(500);
+        }
     }
 }
