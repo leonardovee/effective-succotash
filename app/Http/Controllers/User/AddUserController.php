@@ -20,26 +20,26 @@ class AddUserController extends Controller
     {
         $this->validate($request, [
             'name' => 'required|string',
-            'email' => 'required|string',
+            'email' => 'required|unique:user|string',
             'password' => 'required|string',
-            'document' => 'required|string',
+            'document' => 'required|unique:user|string',
             'type' => 'required|int'
         ]);
 
         try {
             $userId = $this->dbAddUser->add([
-                $request->name,
-                $request->email,
-                $request->password,
-                $request->document,
-                $request->type
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => $request->password,
+                'document' => $request->document,
+                'type' => $request->type
             ]);
 
             return response()->json([
                 'id' => $userId
             ], 201);
         } catch (Exception $exception) {
-            abort(500, 'we couldn\'t process your request');
+            abort(500);
         }
     }
 }

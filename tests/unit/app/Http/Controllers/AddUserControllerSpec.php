@@ -4,10 +4,13 @@ use App\Http\Controllers\User\AddUserController;
 use App\Data\Usecase\User\DbAddUser;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Laravel\Lumen\Testing\DatabaseMigrations;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class AddUserControllerTest extends TestCase
 {
+    use DatabaseMigrations;
+
     private $sut;
     private $stub;
 
@@ -47,11 +50,11 @@ class AddUserControllerTest extends TestCase
         $request = $this->makeRequest();
 
         $this->stub->expects($this->once())->method('add')->with([
-            $request->name,
-            $request->email,
-            $request->password,
-            $request->document,
-            $request->type
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => $request->password,
+            'document' => $request->document,
+            'type' => $request->type
         ]);
 
         $this->sut->handle($request);
