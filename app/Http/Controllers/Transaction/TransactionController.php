@@ -18,8 +18,8 @@ class TransactionController extends Controller
     public function handle(Request $request)
     {
         $this->validate($request, [
-            'payer' => 'required|int:user',
-            'payee' => 'required|int:user',
+            'payer' => 'required|int|exists:user,id',
+            'payee' => 'required|int|exists:user,id',
             'amount' => 'required|numeric'
         ]);
 
@@ -38,7 +38,7 @@ class TransactionController extends Controller
                 'id' => $transaction->id
             ], 201);
         } catch (Exception $exception) {
-            abort(500);
+            abort(500, $exception->getMessage());
         }
     }
 }
