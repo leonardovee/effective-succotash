@@ -23,7 +23,10 @@ class UserFactory extends Factory
     {
         return [
             'name' => $this->faker->name,
-            'email' => $this->faker->unique()->safeEmail,
+            'email' => $this->faker->unique()->email,
+            'password' => $this->faker->password(255, 255),
+            'type' => $this->faker->numberBetween(1, 2),
+            'document' => $this->faker->unique()->numberBetween(10000000000, 99999999999999)
         ];
     }
 }
