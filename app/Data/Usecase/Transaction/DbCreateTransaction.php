@@ -13,13 +13,13 @@ class DbCreateTransaction implements CreateTransaction
     public function __construct(
         $getPayerTypeRepository,
         $getWithdrawsRepository,
-        $getDepositsRepository,
+        $depositsRepository,
         $getTransactionAuthorizerRepository,
         $addTransactionRepository
     ) {
         $this->getPayerTypeRepository = $getPayerTypeRepository;
         $this->getWithdrawsRepository = $getWithdrawsRepository;
-        $this->getDepositsRepository = $getDepositsRepository;
+        $this->depositsRepository = $depositsRepository;
         $this->getTransactionAuthorizerRepository = $getTransactionAuthorizerRepository;
         $this->addTransactionRepository = $addTransactionRepository;
     }
@@ -32,7 +32,7 @@ class DbCreateTransaction implements CreateTransaction
         }
 
         $withdraws = $this->getWithdrawsRepository->get($withdraw->user);
-        $deposits = $this->getDepositsRepository->get($withdraw->user);
+        $deposits = $this->depositsRepository->getDeposits($withdraw->user);
         $balance = $deposits - $withdraws;
 
         if ($withdraw->amount > $balance) {
