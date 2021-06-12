@@ -28,11 +28,11 @@ class DbCreateTransactionTest extends TestCase
 
         $this->withdraw = new Withdraw();
         $this->withdraw->user = $this->payer->id;
-        $this->withdraw->amount = 100;
+        $this->withdraw->amount = 0;
 
         $this->deposit = new Deposit();
         $this->deposit->user = $this->payee->id;
-        $this->deposit->amount = 100;
+        $this->deposit->amount = 0;
 
         $this->getWithdrawsRepositoryStub = $this->createMock(GetWithdrawsRepository::class);
         $this->getDepositsRepositoryStub = $this->createMock(GetDepositsRepository::class);
@@ -63,6 +63,25 @@ class DbCreateTransactionTest extends TestCase
             ->expects($this->once())
             ->method('get')
             ->with($this->payer->id);
+
+        $this->sut->create($this->deposit, $this->withdraw);
+    }
+
+    public function test_should_throw_if_payer_dont_have_enought_balance_to_payee()
+    {
+        $this->makeSut();
+
+        $this->getDepositsRepositoryStub
+            ->expects($this->once())
+            ->method('get')
+            ->willReturn(1000);
+
+        $this->getWithdrawsRepositoryStub
+            ->expects($this->once())
+            ->method('get')
+            ->willReturn(5000);
+
+        $this->expectException(Exception::class);
 
         $this->sut->create($this->deposit, $this->withdraw);
     }
