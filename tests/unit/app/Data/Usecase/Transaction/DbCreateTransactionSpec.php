@@ -11,11 +11,29 @@ use App\Domain\Model\Withdraw;
 class DbCreateTransactionTest extends TestCase
 {
     private $sut;
+    private $payer;
+    private $payee;
+    private $withdraw;
+    private $deposit;
     private $getWithdrawsRepositoryStub;
     private $getDepositsRepositoryStub;
 
     private function makeSut()
     {
+        $this->payer = new Payer();
+        $this->payer->id = 1;
+
+        $this->payee = new Payee();
+        $this->payee->id = 2;
+
+        $this->withdraw = new Withdraw();
+        $this->withdraw->user = $this->payer->id;
+        $this->withdraw->amount = 100;
+
+        $this->deposit = new Deposit();
+        $this->deposit->user = $this->payee->id;
+        $this->deposit->amount = 100;
+
         $this->getWithdrawsRepositoryStub = $this->createMock(GetWithdrawsRepository::class);
         $this->getDepositsRepositoryStub = $this->createMock(GetDepositsRepository::class);
 
@@ -29,51 +47,23 @@ class DbCreateTransactionTest extends TestCase
     {
         $this->makeSut();
 
-        $payer = new Payer();
-        $payer->id = 1;
-
-        $payee = new Payee();
-        $payee->id = 2;
-
-        $withdraw = new Withdraw();
-        $withdraw->user = $payer->id;
-        $withdraw->amount = 100;
-
-        $deposit = new Deposit();
-        $deposit->user = $payee->id;
-        $deposit->amount = 100;
-
         $this->getWithdrawsRepositoryStub
             ->expects($this->once())
             ->method('get')
-            ->with($payer->id);
+            ->with($this->payer->id);
 
-        $this->sut->create($deposit, $withdraw);
+        $this->sut->create($this->deposit, $this->withdraw);
     }
 
     public function test_should_call_get_deposits_repository_with_correct_values()
     {
         $this->makeSut();
 
-        $payer = new Payer();
-        $payer->id = 1;
-
-        $payee = new Payee();
-        $payee->id = 2;
-
-        $withdraw = new Withdraw();
-        $withdraw->user = $payer->id;
-        $withdraw->amount = 100;
-
-        $deposit = new Deposit();
-        $deposit->user = $payee->id;
-        $deposit->amount = 100;
-
         $this->getDepositsRepositoryStub
             ->expects($this->once())
             ->method('get')
-            ->with($payer->id);
+            ->with($this->payer->id);
 
-        $this->sut->create($deposit, $withdraw);
+        $this->sut->create($this->deposit, $this->withdraw);
     }
 }
