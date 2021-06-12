@@ -4,6 +4,7 @@ use App\Data\Usecase\Transaction\DbCreateTransaction;
 use App\Infra\Db\MySql\Withdraw\GetWithdrawsRepository;
 use App\Infra\Db\MySql\Deposit\GetDepositsRepository;
 use App\Infra\Db\MySql\Payer\GetPayerTypeRepository;
+use App\Infra\Web\Authorizer\GetTransactionAuthorizerRepository;
 use App\Domain\Model\Payer;
 use App\Domain\Model\Deposit;
 use App\Domain\Model\Payee;
@@ -19,6 +20,7 @@ class DbCreateTransactionTest extends TestCase
     private $getPayerTypeRepositoryStub;
     private $getWithdrawsRepositoryStub;
     private $getDepositsRepositoryStub;
+    private $getTransactionAuthorizerRepositoryStub;
 
     private function makeSut()
     {
@@ -39,11 +41,13 @@ class DbCreateTransactionTest extends TestCase
         $this->getPayerTypeRepositoryStub = $this->createMock(GetPayerTypeRepository::class);
         $this->getWithdrawsRepositoryStub = $this->createMock(GetWithdrawsRepository::class);
         $this->getDepositsRepositoryStub = $this->createMock(GetDepositsRepository::class);
+        $this->getTransactionAuthorizerRepositoryStub = $this->createMock(GetTransactionAuthorizerRepository::class);
 
         $this->sut = new DbCreateTransaction(
             $this->getPayerTypeRepositoryStub,
             $this->getWithdrawsRepositoryStub,
-            $this->getDepositsRepositoryStub
+            $this->getDepositsRepositoryStub,
+            $this->getTransactionAuthorizerRepositoryStub
         );
     }
 
@@ -113,6 +117,18 @@ class DbCreateTransactionTest extends TestCase
             ->willReturn(5000);
 
         $this->expectException(Exception::class);
+
+        $this->sut->create($this->deposit, $this->withdraw);
+    }
+
+    public function test_should_call_transaction_authorizer_with_correct_values()
+    {
+        $this->makeSut();
+
+        $this->getTransactionAuthorizerRepositoryStub
+            ->expects($this->once())
+            ->method('get')
+            ->with($this->deposit, $this->withdraw);
 
         $this->sut->create($this->deposit, $this->withdraw);
     }
