@@ -34,6 +34,7 @@ class AddUserRepositoryTest extends TestCase
 
         $this->sut->add($request);
 
+        unset($request['password']);
         $this->seeInDatabase('user', $request);
     }
 }
