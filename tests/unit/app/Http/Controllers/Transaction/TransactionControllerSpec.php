@@ -2,6 +2,7 @@
 
 use App\Data\Usecase\Transaction\DbCreateTransaction;
 use App\Domain\Model\Deposit;
+use App\Domain\Model\Transaction;
 use App\Domain\Model\Withdraw;
 use App\Http\Controllers\Transaction\TransactionController;
 use Illuminate\Http\Request;
@@ -34,6 +35,9 @@ class TransactionControllerTest extends TestCase
         $this->withdraw->user = 1;
         $this->withdraw->amount = 10.00;
 
+        $this->transaction = new Transaction();
+        $this->transaction->id = 25;
+
         $this->sut = new TransactionController($this->stub);
     }
 
@@ -54,7 +58,7 @@ class TransactionControllerTest extends TestCase
 
         $request = $this->makeRequest();
 
-        $this->stub->expects($this->once())->method('create')->with($this->deposit, $this->withdraw);
+        $this->stub->expects($this->once())->method('create')->with($this->deposit, $this->withdraw)->willReturn($this->transaction);
 
         $this->sut->handle($request);
     }
@@ -72,5 +76,19 @@ class TransactionControllerTest extends TestCase
         $this->expectException(HttpException::class);
 
         $this->sut->handle($request);
+    }
+
+    public function test_should_return_transaction_id_on_sucess()
+    {
+        $this->makeSut();
+
+        $request = $this->makeRequest();
+
+        $this->stub->expects($this->once())->method('create')->willReturn($this->transaction);
+
+        $response = $this->sut->handle($request);
+
+        $this->assertSame($this->transaction->id, $response->getData()->id);
+        $this->assertSame(201, $response->getStatusCode());
     }
 }
