@@ -16,7 +16,7 @@ class PayerRepositoryTest extends TestCase
         $this->sut = new PayerRepository($this->stub);
     }
 
-    public function teste_should_get_payer_type_on_get_payer_type_success()
+    public function test_should_get_payer_type_on_get_payer_type_success()
     {
         $this->makeSut();
 

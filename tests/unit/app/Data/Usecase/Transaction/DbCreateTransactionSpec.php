@@ -4,7 +4,7 @@ use App\Data\Usecase\Transaction\DbCreateTransaction;
 use App\Infra\Db\MySql\Withdraw\WithdrawRepository;
 use App\Infra\Db\MySql\Deposit\DepositRepository;
 use App\Infra\Db\MySql\Transaction\AddTransactionRepository;
-use App\Infra\Web\Authorizer\GetTransactionAuthorizerRepository;
+use App\Infra\Web\Authorizer\TransactionAuthorizerRepository;
 use App\Domain\Model\Payer;
 use App\Domain\Model\Deposit;
 use App\Domain\Model\Payee;
@@ -21,7 +21,7 @@ class DbCreateTransactionTest extends TestCase
     private $payerRepositoryStub;
     private $withdrawRepositoryStub;
     private $depositRepositoryStub;
-    private $getTransactionAuthorizerRepositoryStub;
+    private $transactionAuthorizerRepositoryStub;
     private $addTransactionRepositoryStub;
 
     private function makeSut()
@@ -43,15 +43,15 @@ class DbCreateTransactionTest extends TestCase
         $this->payerRepositoryStub = $this->createMock(PayerRepository::class);
         $this->withdrawRepositoryStub = $this->createMock(WithdrawRepository::class);
         $this->depositRepositoryStub = $this->createMock(DepositRepository::class);
-        $this->getTransactionAuthorizerRepositoryStub = $this->createMock(GetTransactionAuthorizerRepository::class);
-        $this->getTransactionAuthorizerRepositoryStub->method('get')->willReturn(true);
+        $this->transactionAuthorizerRepositoryStub = $this->createMock(TransactionAuthorizerRepository::class);
+        $this->transactionAuthorizerRepositoryStub->method('authorize')->willReturn(true);
         $this->addTransactionRepositoryStub = $this->createMock(AddTransactionRepository::class);
 
         $this->sut = new DbCreateTransaction(
             $this->payerRepositoryStub,
             $this->withdrawRepositoryStub,
             $this->depositRepositoryStub,
-            $this->getTransactionAuthorizerRepositoryStub,
+            $this->transactionAuthorizerRepositoryStub,
             $this->addTransactionRepositoryStub
         );
     }
@@ -130,9 +130,9 @@ class DbCreateTransactionTest extends TestCase
     {
         $this->makeSut();
 
-        $this->getTransactionAuthorizerRepositoryStub
+        $this->transactionAuthorizerRepositoryStub
             ->expects($this->once())
-            ->method('get')
+            ->method('authorize')
             ->with($this->deposit, $this->withdraw);
 
         $this->sut->create($this->deposit, $this->withdraw);
@@ -142,14 +142,14 @@ class DbCreateTransactionTest extends TestCase
     {
         $this->makeSut();
 
-        $this->getTransactionAuthorizerRepositoryStub = $this->createMock(GetTransactionAuthorizerRepository::class);
-        $this->getTransactionAuthorizerRepositoryStub->method('get')->willReturn(false);
+        $this->transactionAuthorizerRepositoryStub = $this->createMock(TransactionAuthorizerRepository::class);
+        $this->transactionAuthorizerRepositoryStub->method('authorize')->willReturn(false);
 
         $this->sut = new DbCreateTransaction(
             $this->payerRepositoryStub,
             $this->withdrawRepositoryStub,
             $this->depositRepositoryStub,
-            $this->getTransactionAuthorizerRepositoryStub,
+            $this->transactionAuthorizerRepositoryStub,
             $this->addTransactionRepositoryStub
         );
 

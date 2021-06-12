@@ -17,7 +17,7 @@ class DepositRepositoryTest extends TestCase
         $this->sut = new DepositRepository($this->stub);
     }
 
-    public function teste_should_get_deposits_on_get_deposits_success()
+    public function test_should_get_deposits_on_get_deposits_success()
     {
         $this->makeSut();
 

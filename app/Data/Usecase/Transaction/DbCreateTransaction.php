@@ -14,13 +14,13 @@ class DbCreateTransaction implements CreateTransaction
         $payerRepository,
         $withdrawRepository,
         $depositsRepository,
-        $getTransactionAuthorizerRepository,
+        $transactionAuthorizerRepository,
         $addTransactionRepository
     ) {
         $this->payerRepository = $payerRepository;
         $this->withdrawRepository = $withdrawRepository;
         $this->depositsRepository = $depositsRepository;
-        $this->getTransactionAuthorizerRepository = $getTransactionAuthorizerRepository;
+        $this->transactionAuthorizerRepository = $transactionAuthorizerRepository;
         $this->addTransactionRepository = $addTransactionRepository;
     }
 
@@ -39,7 +39,7 @@ class DbCreateTransaction implements CreateTransaction
             throw new Exception();
         }
 
-        $isTransactionAuthorized = $this->getTransactionAuthorizerRepository->get($deposit, $withdraw);
+        $isTransactionAuthorized = $this->transactionAuthorizerRepository->authorize($deposit, $withdraw);
         if (!$isTransactionAuthorized) {
             throw new Exception();
         }

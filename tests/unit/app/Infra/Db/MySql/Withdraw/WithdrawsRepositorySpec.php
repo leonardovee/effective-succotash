@@ -17,7 +17,7 @@ class WithdrawRepositoryTest extends TestCase
         $this->sut = new WithdrawRepository($this->stub);
     }
 
-    public function teste_should_get_withdraws_on_get_withdraws_success()
+    public function test_should_get_withdraws_on_get_withdraws_success()
     {
         $this->makeSut();
 
