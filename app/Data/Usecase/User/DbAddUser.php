@@ -11,6 +11,6 @@ class DbAddUser
 
     public function add (array $request)
     {
-        $this->addUserRepository->add($request);
+        return $this->addUserRepository->add($request);
     }
 }
