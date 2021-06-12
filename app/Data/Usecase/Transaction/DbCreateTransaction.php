@@ -22,7 +22,10 @@ class DbCreateTransaction implements CreateTransaction
 
     public function create (Deposit $deposit, Withdraw $withdraw): Transaction
     {
-        $this->getPayerTypeRepository->get($withdraw->user);
+        $payerType = $this->getPayerTypeRepository->get($withdraw->user);
+        if ($payerType === 1) {
+            throw new Exception();
+        }
         $withdraws = $this->getWithdrawsRepository->get($withdraw->user);
         $deposits = $this->getDepositsRepository->get($withdraw->user);
         $balance = $deposits - $withdraws;
