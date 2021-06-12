@@ -40,8 +40,9 @@ class TransactionRepository implements AddTransactionRepository
 
         $result = new Transaction();
         $result->id = $transaction->id;
-        $result->deposit = $deposit;
-        $result->withdraw = $withdraw;
+
+        $result->deposit = new Deposit($deposit->id, $deposit->user, $deposit->amount);
+        $result->withdraw = new Withdraw($withdraw->id, $withdraw->user, $withdraw->amount);
 
         return $result;
     }
