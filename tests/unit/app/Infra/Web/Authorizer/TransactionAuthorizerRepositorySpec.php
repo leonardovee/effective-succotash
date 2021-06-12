@@ -39,4 +39,26 @@ class TransactionAuthorizerRepositoryTest extends TestCase
 
         $this->assertSame(false, $response);
     }
+
+    public function test_should_return_true_if_a_valid_response_is_returned()
+    {
+        $this->makeSut();
+
+        $deposit = new Deposit();
+        $deposit->user = 1;
+        $deposit->amount = 1000;
+
+        $withdraw = new Withdraw();
+        $withdraw->user = 2;
+        $withdraw->amount = 1000;
+
+        Http::shouldReceive('post')
+            ->once()
+            ->with(env('AUTHORIZER_URL'))
+            ->andReturn('valid');
+
+        $response = $this->sut->authorize($deposit, $withdraw);
+
+        $this->assertSame(true, $response);
+    }
 }
