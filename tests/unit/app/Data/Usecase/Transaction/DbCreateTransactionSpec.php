@@ -42,6 +42,7 @@ class DbCreateTransactionTest extends TestCase
         $this->getWithdrawsRepositoryStub = $this->createMock(GetWithdrawsRepository::class);
         $this->getDepositsRepositoryStub = $this->createMock(GetDepositsRepository::class);
         $this->getTransactionAuthorizerRepositoryStub = $this->createMock(GetTransactionAuthorizerRepository::class);
+        $this->getTransactionAuthorizerRepositoryStub->method('get')->willReturn(true);
 
         $this->sut = new DbCreateTransaction(
             $this->getPayerTypeRepositoryStub,
@@ -129,6 +130,25 @@ class DbCreateTransactionTest extends TestCase
             ->expects($this->once())
             ->method('get')
             ->with($this->deposit, $this->withdraw);
+
+        $this->sut->create($this->deposit, $this->withdraw);
+    }
+
+    public function test_should_throw_if_transaction_authorizer_returns_false()
+    {
+        $this->makeSut();
+
+        $this->getTransactionAuthorizerRepositoryStub = $this->createMock(GetTransactionAuthorizerRepository::class);
+        $this->getTransactionAuthorizerRepositoryStub->method('get')->willReturn(false);
+
+        $this->sut = new DbCreateTransaction(
+            $this->getPayerTypeRepositoryStub,
+            $this->getWithdrawsRepositoryStub,
+            $this->getDepositsRepositoryStub,
+            $this->getTransactionAuthorizerRepositoryStub
+        );
+
+        $this->expectException(Exception::class);
 
         $this->sut->create($this->deposit, $this->withdraw);
     }
