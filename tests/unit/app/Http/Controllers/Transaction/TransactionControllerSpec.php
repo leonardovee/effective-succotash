@@ -6,6 +6,7 @@ use App\Domain\Model\Withdraw;
 use App\Http\Controllers\Transaction\TransactionController;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class TransactionControllerTest extends TestCase
 {
@@ -47,7 +48,6 @@ class TransactionControllerTest extends TestCase
         $this->sut->handle($request);
     }
 
-
     public function test_should_call_db_create_transaction_with_correct_values()
     {
         $this->makeSut();
@@ -55,6 +55,21 @@ class TransactionControllerTest extends TestCase
         $request = $this->makeRequest();
 
         $this->stub->expects($this->once())->method('create')->with($this->deposit, $this->withdraw);
+
+        $this->sut->handle($request);
+    }
+
+    public function test_should_return_server_error_if_db_create_transaction_throws()
+    {
+        $this->makeSut();
+
+        $request = $this->makeRequest();
+
+        $this->stub->expects($this->once())->method('create')->will(
+            $this->throwException(new Exception)
+        );
+
+        $this->expectException(HttpException::class);
 
         $this->sut->handle($request);
     }
