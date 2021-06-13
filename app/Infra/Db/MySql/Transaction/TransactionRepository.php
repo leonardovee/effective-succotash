@@ -6,8 +6,8 @@ use App\Data\Protocols\Db\MySql\Transaction\AddTransactionRepository;
 use App\Domain\Model\Deposit;
 use App\Domain\Model\Transaction;
 use App\Domain\Model\Withdraw;
-use Exception;
 use Illuminate\Support\Facades\DB;
+use Exception;
 use Throwable;
 
 class TransactionRepository implements AddTransactionRepository
