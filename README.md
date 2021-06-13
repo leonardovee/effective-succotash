@@ -1,6 +1,6 @@
 # Lumen PHP Framework
 
-[![Maintainability](https://api.codeclimate.com/v1/badges/92cd4b4959a2085b2e24/maintainability)](https://codeclimate.com/github/leonardovee/effective-succotash/maintainability)
+[![Maintainability](https://api.codeclimate.com/v1/badges/92cd4b4959a2085b2e24/maintainability)](https://codeclimate.com/github/leonardovee/effective-succotash/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/92cd4b4959a2085b2e24/test_coverage)](https://codeclimate.com/github/leonardovee/effective-succotash/test_coverage)
 
 ---
 
