@@ -37,6 +37,7 @@
         "post-root-package-install": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
         ],
+        "dev": "php -S localhost:8000 -t public",
         "test:unit": "phpunit --testdox --testsuite Unit",
         "test:integration": "phpunit --testdox --testsuite Integration",
         "test:coverage": "phpunit --coverage-clover clover.xml",
