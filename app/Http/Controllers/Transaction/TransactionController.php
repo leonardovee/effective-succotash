@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Transaction;
 use App\Domain\Model\Deposit;
 use App\Domain\Model\Withdraw;
 use App\Http\Controllers\Controller;
-use Exception;
 use Illuminate\Http\Request;
+use Exception;
 
 class TransactionController extends Controller
 {
@@ -24,13 +24,9 @@ class TransactionController extends Controller
         ]);
 
         try {
-            $deposit = new Deposit();
-            $deposit->user = $request->payee;
-            $deposit->amount = $request->amount;
+            $deposit = new Deposit(0, $request->payee, $request->amount);
 
-            $withdraw = new Withdraw();
-            $withdraw->user = $request->payer;
-            $withdraw->amount = $request->amount;
+            $withdraw = new Withdraw(0, $request->payer, $request->amount);
 
             $transaction = $this->dbCreateTransaction->create($deposit, $withdraw);
 
