@@ -1,7 +1,7 @@
 language: php
 
 php:
-  - 7.4
+  - 7.4.3
 
 env:
   global:
@@ -15,6 +15,7 @@ before_script:
   - composer self-update
   - composer install --prefer-source --no-interaction
   - php artisan migrate
+  - XDEBUG_MODE=coverage ./vendor/bin/phpunit
 
 after_script:
   - ./cc-test-reporter upload-coverage --input 'clover.xml' -r $CC_TEST_REPORTER_ID
@@ -24,7 +25,7 @@ before_install:
   - mysql -e 'CREATE DATABASE effective_succotash;'
 
 script:
-  - composer test:coverage
+  - XDEBUG_MODE=coverage ./vendor/bin/phpunit --coverage-clover clover.xml
 
 services:
   - mysql
