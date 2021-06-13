@@ -37,12 +37,11 @@ class UserController extends Controller
             $user->type = $request->type;
 
             $userId = $this->dbAddUser->add($user);
-
-            return response()->json([
-                'id' => $userId
-            ], 201);
         } catch (Exception $exception) {
             abort(500);
         }
+        return response()->json([
+            'id' => $userId
+        ], 201);
     }
 }

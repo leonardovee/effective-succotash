@@ -29,12 +29,11 @@ class TransactionController extends Controller
             $withdraw = new Withdraw(0, $request->payer, $request->amount);
 
             $transaction = $this->dbCreateTransaction->create($deposit, $withdraw);
-
-            return response()->json([
-                'id' => $transaction->id
-            ], 201);
         } catch (Exception $exception) {
             abort(500, $exception->getMessage());
         }
+        return response()->json([
+            'id' => $transaction->id
+        ], 201);
     }
 }
