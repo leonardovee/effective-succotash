@@ -57,4 +57,17 @@ class TransactionRepositoryTest extends TestCase
 
         $this->assertInstanceOf(Transaction::class, $response);
     }
+
+    public function test_should_throw_exception_on_failure()
+    {
+        $this->makeSut();
+
+        $withdraw = new Withdraw();
+
+        $deposit = new Deposit();
+
+        $this->expectException(Exception::class);
+
+        $response = $this->sut->add($deposit, $withdraw);
+    }
 }
