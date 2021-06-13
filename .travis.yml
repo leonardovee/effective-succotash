@@ -17,8 +17,8 @@ before_script:
   - php artisan migrate
 
 after_script:
-  - ./cc-test-reporter upload-coverage --input 'build/logs/clover.xml' -r $CC_TEST_REPORTER_ID
-  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+  - ./cc-test-reporter upload-coverage --input 'clover.xml' -r $CC_TEST_REPORTER_ID
+  - ./cc-test-reporter after-build -t clover --exit-code $TRAVIS_TEST_RESULT
 
 before_install:
   - mysql -e 'CREATE DATABASE effective_succotash;'
