@@ -38,6 +38,7 @@
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
         ],
         "test:unit": "phpunit --testdox --testsuite Unit",
-        "test:integration": "phpunit --testdox --testsuite Integration"
+        "test:integration": "phpunit --testdox --testsuite Integration",
+        "test:coverage": "phpunit --coverage-text"
     }
 }
