@@ -39,6 +39,7 @@
         ],
         "test:unit": "phpunit --testdox --testsuite Unit",
         "test:integration": "phpunit --testdox --testsuite Integration",
-        "test:coverage": "phpunit --coverage-clover clover.xml"
+        "test:coverage": "phpunit --coverage-clover clover.xml",
+        "test:coverage-html": "phpunit --coverage-html=./coverage"
     }
 }
