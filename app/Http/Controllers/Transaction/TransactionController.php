@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Transaction;
 use App\Domain\Model\Deposit;
 use App\Domain\Model\Withdraw;
 use App\Http\Controllers\Controller;
+use App\Jobs\NotifyTransaction;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Queue;
 use Exception;
 
 class TransactionController extends Controller
@@ -32,6 +34,9 @@ class TransactionController extends Controller
         } catch (Exception $exception) {
             abort(500, $exception->getMessage());
         }
+
+        Queue::push(new NotifyTransaction($transaction));
+
         return response()->json([
             'id' => $transaction->id
         ], 201);
