@@ -24,7 +24,7 @@ before_install:
   - mysql -e 'CREATE DATABASE effective_succotash;'
 
 script:
-  - phpunit
+  - composer test:coverage
 
 services:
   - mysql
