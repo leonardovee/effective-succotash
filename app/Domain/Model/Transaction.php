@@ -2,7 +2,8 @@
 
 namespace App\Domain\Model;
 
-class Transaction {
+class Transaction
+{
     public int $id;
     public Deposit $deposit;
     public Withdraw $withdraw;
