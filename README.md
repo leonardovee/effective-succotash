@@ -1,28 +1,49 @@
-# Lumen PHP Framework
+# The effective succotash
 
-[![Maintainability](https://api.codeclimate.com/v1/badges/92cd4b4959a2085b2e24/maintainability)](https://codeclimate.com/github/leonardovee/effective-succotash/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/92cd4b4959a2085b2e24/test_coverage)](https://codeclimate.com/github/leonardovee/effective-succotash/test_coverage)
+[![Build Status](https://www.travis-ci.com/leonardovee/effective-succotash.svg?branch=main)](https://www.travis-ci.com/leonardovee/effective-succotash) [![Maintainability](https://api.codeclimate.com/v1/badges/92cd4b4959a2085b2e24/maintainability)](https://codeclimate.com/github/leonardovee/effective-succotash/maintainability) [![Test Coverage](https://api.codeclimate.com/v1/badges/92cd4b4959a2085b2e24/test_coverage)](https://codeclimate.com/github/leonardovee/effective-succotash/test_coverage)
 
----
+Effective succotash, apart from the dish, is a proof of concept of a payment system written in PHP.
 
-[![Build Status](https://travis-ci.org/laravel/lumen-framework.svg)](https://travis-ci.org/laravel/lumen-framework)
-[![Total Downloads](https://img.shields.io/packagist/dt/laravel/framework)](https://packagist.org/packages/laravel/lumen-framework)
-[![Latest Stable Version](https://img.shields.io/packagist/v/laravel/framework)](https://packagist.org/packages/laravel/lumen-framework)
-[![License](https://img.shields.io/packagist/l/laravel/framework)](https://packagist.org/packages/laravel/lumen-framework)
+Some principles of Robert C. Martin's Clean Architecture book where used in the development, the structure was created using the [Lumen framework](https://lumen.laravel.com/docs), BUT principles are still there, and the domain is decoupled from the rest of the Lumen source code.
 
-Laravel Lumen is a stunningly fast PHP micro-framework for building web applications with expressive, elegant syntax. We believe development must be an enjoyable, creative experience to be truly fulfilling. Lumen attempts to take the pain out of development by easing common tasks used in the majority of web projects, such as routing, database abstraction, queueing, and caching.
+### How to run
 
-## Official Documentation
+There is a [docker image](https://lumen.laravel.com/docs) built for the app, just clone the repo and execute the command:
+```
+$ docker-compose up -d
+```
 
-Documentation for the framework can be found on the [Lumen website](https://lumen.laravel.com/docs).
+After building up the containers you'll have to run the migrations for the database.
+```
+$ docker exec -it <CONTAINER> sh
+$ php artisan migrate
+```
 
-## Contributing
+And you're good to go!
 
-Thank you for considering contributing to Lumen! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Endpoint for creating a transaction
+```
+  POST - /transaction
+```
 
-## Security Vulnerabilities
+### Payload for creating the transaction
+```json
+{
+    "amount" : 100.00,
+    "payer" : 1,
+    "payee" : 2
+}
+```
 
-If you discover a security vulnerability within Lumen, please send an e-mail to Taylor Otwell at taylor@laravel.com. All security vulnerabilities will be promptly addressed.
+There is also a endpoint for creating user's of the transactions on `/user`.
 
-## License
+### Missing and good to have features
+- [ ] `/transaction` methods.
+- [ ] `/balance` route.
+- [ ] `/deposit` route.
+- [ ] `/withdraw` route.
 
-The Lumen framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### Security Vulnerabilities
+
+If you discover a security vulnerability within this project, please open an issue. All security vulnerabilities will be promptly addressed.
+
