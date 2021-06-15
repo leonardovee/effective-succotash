@@ -10,6 +10,7 @@ Some principles of Robert C. Martin's Clean Architecture book where used in the 
 
 There is a [docker image](https://lumen.laravel.com/docs) built for the app, just clone the repo and execute the command:
 ```
+$ cp .env.example .env
 $ docker-compose up -d
 ```
 
