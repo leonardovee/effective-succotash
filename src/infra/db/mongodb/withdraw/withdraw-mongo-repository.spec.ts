@@ -1,6 +1,6 @@
 import { MongoHelper } from '@/infra/db/mongodb/helper/mongo-helper'
 import { Collection } from 'mongodb'
-import { WithdrawMongoRepository } from './withdraw-mongo-repository'
+import { WithdrawMongoRepository } from '@/infra/db/mongodb/withdraw/withdraw-mongo-repository'
 
 let withdrawCollection: Collection
 
