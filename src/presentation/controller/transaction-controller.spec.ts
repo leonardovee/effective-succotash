@@ -5,7 +5,8 @@ import { DepositModel } from '@/domain/model/deposit'
 import { TransactionModel } from '@/domain/model/transaction'
 import { WithdrawModel } from '@/domain/model/withdraw'
 import { CreateTransaction } from '@/domain/usecase/create-transaction'
-import { internalServerError } from '../http/internal-server-error'
+import { internalServerError } from '@/presentation/http/internal-server-error'
+import { created } from '@/presentation/http/created'
 
 const makeFakeTransaction = (): TransactionModel => {
   return {
@@ -112,5 +113,17 @@ describe('TransactionController', () => {
       }
     })
     expect(response).toEqual(internalServerError(new Error('any_message')))
+  })
+
+  it('Should return 201', async () => {
+    const { sut } = makeSut()
+    const response = await sut.handle({
+      body: {
+        payer: 'any_payer',
+        payee: 'any_payee',
+        amount: 1000
+      }
+    })
+    expect(response).toEqual(created(makeFakeTransaction()))
   })
 })
