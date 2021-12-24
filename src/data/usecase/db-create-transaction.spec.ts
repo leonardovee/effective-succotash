@@ -153,7 +153,7 @@ describe('DbCreateTransaction', () => {
 
     const promise = sut.create(...makeFakeRequest())
 
-    await expect(promise).rejects.toThrow(UnauthorizedTransactionError)
+    await expect(promise).rejects.toThrow('Bussiness shoudn\'t pay users.')
   })
 
   it('Should call withdraw repository with correct values', async () => {
@@ -185,7 +185,7 @@ describe('DbCreateTransaction', () => {
 
     const promise = sut.create(...makeFakeRequest())
 
-    await expect(promise).rejects.toThrow(UnauthorizedTransactionError)
+    await expect(promise).rejects.toThrow('Not enough balance.')
   })
 
   it('Should call authorizer repository with correct values', async () => {
@@ -205,7 +205,7 @@ describe('DbCreateTransaction', () => {
 
     const promise = sut.create(...makeFakeRequest())
 
-    await expect(promise).rejects.toThrow(UnauthorizedTransactionError)
+    await expect(promise).rejects.toThrow('Transaction unauthorized.')
   })
 
   it('Should call transaction repository with correct values', async () => {

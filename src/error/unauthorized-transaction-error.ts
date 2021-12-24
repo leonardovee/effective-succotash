@@ -1,6 +1,6 @@
 export class UnauthorizedTransactionError extends Error {
-  constructor () {
-    super('Bussiness shoudn\'t pay users.')
+  constructor (message: string) {
+    super(message)
     this.name = 'UnauthorizedTransactionError'
   }
 }
