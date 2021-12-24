@@ -5,6 +5,7 @@ import { DepositModel } from '@/domain/model/deposit'
 import { TransactionModel } from '@/domain/model/transaction'
 import { WithdrawModel } from '@/domain/model/withdraw'
 import { CreateTransaction } from '@/domain/usecase/create-transaction'
+import { internalServerError } from '../http/internal-server-error'
 
 const makeFakeTransaction = (): TransactionModel => {
   return {
@@ -96,5 +97,20 @@ describe('TransactionController', () => {
       }
     })
     expect(createSpy).toHaveBeenCalledWith(makeFakeDeposit(), makeFakeWithdraw())
+  })
+
+  it('Should return 500 if CreateTransaction throws', async () => {
+    const { sut, createTransactionStub } = makeSut()
+    jest.spyOn(createTransactionStub, 'create').mockReturnValueOnce(
+      new Promise((resolve, reject) => reject(new Error('any_message')))
+    )
+    const response = await sut.handle({
+      body: {
+        payer: 'any_payer',
+        payee: 'any_payee',
+        amount: 1000
+      }
+    })
+    expect(response).toEqual(internalServerError(new Error('any_message')))
   })
 })
