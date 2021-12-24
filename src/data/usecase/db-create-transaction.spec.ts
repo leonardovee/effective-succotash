@@ -5,8 +5,8 @@ import { DepositModel } from '@/domain/model/deposit'
 import { WithdrawModel } from '@/domain/model/withdraw'
 import { LoadWithdrawsByUserRepository } from '@/data/protocol/load-withdraws-by-user-repository'
 import { LoadDepositsByUserRepository } from '@/data/protocol/load-deposits-by-user-repository'
-import { LoadTransactionAuthorizationRepository } from '../protocol/authorizer-repository'
-import { CreateTransactionByDepositAndWithdrawRepository } from '../protocol/create-transaction-by-deposit-and-withdraw-repository'
+import { LoadTransactionAuthorizationRepository } from '@/data/protocol/load-transaction-authorization-repository'
+import { CreateTransactionByDepositAndWithdrawRepository } from '@/data/protocol/create-transaction-by-deposit-and-withdraw-repository'
 import { TransactionModel } from '@/domain/model/transaction'
 
 const makeFakeTransaction = (): TransactionModel => {
