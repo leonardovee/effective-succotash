@@ -6,12 +6,14 @@ import { LoadUserByIdRepository } from '@/data/protocol/load-user-by-id-reposito
 import { UnauthorizedTransactionError } from '@/error/unauthorized-transaction-error'
 import { LoadWithdrawsByUserRepository } from '@/data/protocol/load-withdraws-by-user-repository'
 import { LoadDepositsByUserRepository } from '@/data/protocol/load-deposits-by-user-repository'
+import { AuthorizerRepository } from '../protocol/authorizer-repository'
 
 export class DbCreateTransaction implements CreateTransaction {
   constructor (
     private readonly loadUserByIdRepository: LoadUserByIdRepository,
     private readonly loadWithdrawsByUserRepository: LoadWithdrawsByUserRepository,
-    private readonly loadDepositsByUserRepository: LoadDepositsByUserRepository
+    private readonly loadDepositsByUserRepository: LoadDepositsByUserRepository,
+    private readonly authorizerRepository: AuthorizerRepository,
   ) {}
 
   async create (deposit: DepositModel, withdraw: WithdrawModel): Promise<TransactionModel> {
@@ -31,6 +33,8 @@ export class DbCreateTransaction implements CreateTransaction {
     if (withdraw.amount > balance) {
       throw new UnauthorizedTransactionError()
     }
+
+    await this.authorizerRepository.authorize(deposit, withdraw)
 
     return null
   }
