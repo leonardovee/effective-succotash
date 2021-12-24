@@ -34,7 +34,10 @@ export class DbCreateTransaction implements CreateTransaction {
       throw new UnauthorizedTransactionError()
     }
 
-    await this.authorizerRepository.authorize(deposit, withdraw)
+    const isAuthorized = await this.authorizerRepository.authorize(deposit, withdraw)
+    if (!isAuthorized) {
+      throw new UnauthorizedTransactionError()
+    }
 
     return null
   }
