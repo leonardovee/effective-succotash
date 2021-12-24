@@ -43,5 +43,17 @@ describe('WithdrawMongoRepository', () => {
       expect(withdraws[2].user).toBe('any_id')
       expect(withdraws[2].amount).toBe(3000)
     })
+
+    test('Should return an empty list', async () => {
+      await withdrawCollection.insertMany([
+        { user: 'other_id', amount: 1000 }
+      ])
+
+      const sut = makeSut()
+
+      const withdraws = await sut.loadByUser('any_id')
+
+      expect(withdraws.length).toBe(0)
+    })
   })
 })
