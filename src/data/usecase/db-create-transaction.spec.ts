@@ -173,4 +173,15 @@ describe('DbCreateTransaction', () => {
 
     expect(loadByIdSpy).toHaveBeenCalledWith(...makeFakeRequest())
   })
+
+  it('Should throw unauthorized transaction error if authorizer repository returns false', async () => {
+    const { sut, authorizerRepositoryStub } = makeSut()
+    jest.spyOn(authorizerRepositoryStub, 'authorize').mockReturnValueOnce(
+      new Promise(resolve => resolve(false))
+    )
+
+    const promise = sut.create(...makeFakeRequest())
+
+    await expect(promise).rejects.toThrow(UnauthorizedTransactionError)
+  })
 })
