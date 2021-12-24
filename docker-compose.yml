@@ -1,0 +1,16 @@
+version: "3"
+services: 
+  app:
+    container_name: effective-succotash
+    image: effective-succotash
+    build: .
+    restart: always
+    volumes:
+      - ./dist:/usr/src/effective-succotash/dist
+      - ./package.json:/usr/src/effective-succotash/package.json
+    ports:
+      - "5050:5050"
+      - "9222:9222"
+    command: npm run debug
+    links:
+      - mongo
