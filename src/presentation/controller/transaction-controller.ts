@@ -2,10 +2,16 @@ import { Controller } from '@/presentation/protocol/controller'
 import { HttpRequest, HttpResponse } from '@/presentation/protocol/http'
 import { unprocessableEntity } from '@/presentation/http/unprocessable-entity'
 import { MissingParamError } from '@/presentation/error/missing-param-error'
+import { CreateTransaction } from '@/domain/usecase/create-transaction'
 
 export class TransactionController implements Controller {
+  constructor (
+    private readonly createTransaction: CreateTransaction
+  ) {}
+
   async handle (httpRequest: HttpRequest): Promise<HttpResponse> {
     const { payer, payee, amount } = httpRequest.body
+
     if (!payer) {
       return unprocessableEntity(new MissingParamError('payer'))
     }
@@ -15,5 +21,13 @@ export class TransactionController implements Controller {
     if (!amount) {
       return unprocessableEntity(new MissingParamError('amount'))
     }
+
+    this.createTransaction.create({
+      user: payer,
+      amount
+    }, {
+      user: payee,
+      amount
+    })
   }
 }
