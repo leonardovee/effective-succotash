@@ -13,4 +13,15 @@ describe('TransactionController', () => {
     })
     expect(response).toEqual(unprocessableEntity(new MissingParamError('payer')))
   })
+
+  it('Should return 422 if no payee is provided', async () => {
+    const sut = new TransactionController()
+    const response = await sut.handle({
+      body: {
+        payer: 'any_payer',
+        amount: 1000
+      }
+    })
+    expect(response).toEqual(unprocessableEntity(new MissingParamError('payee')))
+  })
 })
