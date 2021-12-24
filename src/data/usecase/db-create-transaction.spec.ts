@@ -5,7 +5,7 @@ import { DepositModel } from '@/domain/model/deposit'
 import { WithdrawModel } from '@/domain/model/withdraw'
 import { LoadWithdrawsByUserRepository } from '@/data/protocol/load-withdraws-by-user-repository'
 import { LoadDepositsByUserRepository } from '@/data/protocol/load-deposits-by-user-repository'
-import { AuthorizerRepository } from '../protocol/authorizer-repository'
+import { LoadTransactionAuthorizationRepository } from '../protocol/authorizer-repository'
 import { CreateTransactionByDepositAndWithdrawRepository } from '../protocol/create-transaction-by-deposit-and-withdraw-repository'
 import { TransactionModel } from '@/domain/model/transaction'
 
@@ -51,13 +51,13 @@ const makeFakeUser = (): UserModel => {
   }
 }
 
-const makeAuthorizerRepository = (): AuthorizerRepository => {
-  class AuthorizerRepositoryStub implements AuthorizerRepository {
-    async authorize (deposit: DepositModel, withdraw: WithdrawModel): Promise<boolean> {
+const makeLoadTransactionAuthorizationRepository = (): LoadTransactionAuthorizationRepository => {
+  class LoadTransactionAuthorizationRepositoryStub implements LoadTransactionAuthorizationRepository {
+    async load (deposit: DepositModel, withdraw: WithdrawModel): Promise<boolean> {
       return new Promise(resolve => resolve(true))
     }
   }
-  return new AuthorizerRepositoryStub()
+  return new LoadTransactionAuthorizationRepositoryStub()
 }
 
 const makeCreateTransactionByDepositAndWithdrawRepository = (): CreateTransactionByDepositAndWithdrawRepository => {
@@ -101,13 +101,13 @@ interface SutTypes {
   loadUserByEmailRepositoryStub: LoadUserByEmailRepository
   loadWithdrawsByUserRepositoryStub: LoadWithdrawsByUserRepository
   loadDepositsByUserRepositoryStub: LoadDepositsByUserRepository
-  authorizerRepositoryStub: AuthorizerRepository,
+  loadTransactionAuthorizationRepository: LoadTransactionAuthorizationRepository,
   createTransactionByDepositAndWithdrawRepositoryStub: CreateTransactionByDepositAndWithdrawRepository
 }
 
 const makeSut = (): SutTypes => {
   const createTransactionByDepositAndWithdrawRepositoryStub = makeCreateTransactionByDepositAndWithdrawRepository()
-  const authorizerRepositoryStub = makeAuthorizerRepository()
+  const loadTransactionAuthorizationRepository = makeLoadTransactionAuthorizationRepository()
   const loadDepositsByUserRepositoryStub = makeLoadDepositsByUserRepository()
   const loadWithdrawsByUserRepositoryStub = makeLoadWithdrawsByUserRepository()
   const loadUserByEmailRepositoryStub = makeLoadUserByEmailRepository()
@@ -115,7 +115,7 @@ const makeSut = (): SutTypes => {
     loadUserByEmailRepositoryStub,
     loadWithdrawsByUserRepositoryStub,
     loadDepositsByUserRepositoryStub,
-    authorizerRepositoryStub,
+    loadTransactionAuthorizationRepository,
     createTransactionByDepositAndWithdrawRepositoryStub
   )
   return {
@@ -123,7 +123,7 @@ const makeSut = (): SutTypes => {
     loadUserByEmailRepositoryStub,
     loadWithdrawsByUserRepositoryStub,
     loadDepositsByUserRepositoryStub,
-    authorizerRepositoryStub,
+    loadTransactionAuthorizationRepository,
     createTransactionByDepositAndWithdrawRepositoryStub
   }
 }
@@ -188,8 +188,8 @@ describe('DbCreateTransaction', () => {
   })
 
   it('Should call authorizer repository with correct values', async () => {
-    const { sut, authorizerRepositoryStub } = makeSut()
-    const loadByEmailSpy = jest.spyOn(authorizerRepositoryStub, 'authorize')
+    const { sut, loadTransactionAuthorizationRepository } = makeSut()
+    const loadByEmailSpy = jest.spyOn(loadTransactionAuthorizationRepository, 'load')
 
     await sut.create(...makeFakeRequest())
 
@@ -197,8 +197,8 @@ describe('DbCreateTransaction', () => {
   })
 
   it('Should throw unauthorized transaction error if authorizer repository returns false', async () => {
-    const { sut, authorizerRepositoryStub } = makeSut()
-    jest.spyOn(authorizerRepositoryStub, 'authorize').mockReturnValueOnce(
+    const { sut, loadTransactionAuthorizationRepository } = makeSut()
+    jest.spyOn(loadTransactionAuthorizationRepository, 'load').mockReturnValueOnce(
       new Promise(resolve => resolve(false))
     )
 

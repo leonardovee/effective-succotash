@@ -6,7 +6,7 @@ import { LoadUserByEmailRepository } from '@/data/protocol/load-user-by-id-repos
 import { UnauthorizedTransactionError } from '@/error/unauthorized-transaction-error'
 import { LoadWithdrawsByUserRepository } from '@/data/protocol/load-withdraws-by-user-repository'
 import { LoadDepositsByUserRepository } from '@/data/protocol/load-deposits-by-user-repository'
-import { AuthorizerRepository } from '@/data/protocol/authorizer-repository'
+import { LoadTransactionAuthorizationRepository } from '@/data/protocol/authorizer-repository'
 import { CreateTransactionByDepositAndWithdrawRepository } from '@/data/protocol/create-transaction-by-deposit-and-withdraw-repository'
 
 export class DbCreateTransaction implements CreateTransaction {
@@ -14,7 +14,7 @@ export class DbCreateTransaction implements CreateTransaction {
     private readonly loadUserByEmailRepository: LoadUserByEmailRepository,
     private readonly loadWithdrawsByUserRepository: LoadWithdrawsByUserRepository,
     private readonly loadDepositsByUserRepository: LoadDepositsByUserRepository,
-    private readonly authorizerRepository: AuthorizerRepository,
+    private readonly loadTransactionAuthorizationRepository: LoadTransactionAuthorizationRepository,
     private readonly createTransactionByDepositAndWithdrawRepository: CreateTransactionByDepositAndWithdrawRepository
   ) {}
 
@@ -36,7 +36,7 @@ export class DbCreateTransaction implements CreateTransaction {
       throw new UnauthorizedTransactionError('Not enough balance.')
     }
 
-    const isAuthorized = await this.authorizerRepository.authorize(deposit, withdraw)
+    const isAuthorized = await this.loadTransactionAuthorizationRepository.load(deposit, withdraw)
     if (!isAuthorized) {
       throw new UnauthorizedTransactionError('Transaction unauthorized.')
     }
