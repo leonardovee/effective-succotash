@@ -4,13 +4,21 @@ import { LoadUserByIdRepository } from '@/data/protocol/load-user-by-id-reposito
 import { UnauthorizedTransactionError } from '@/error/unauthorized-transaction-error'
 import { DepositModel } from '@/domain/model/deposit'
 import { WithdrawModel } from '@/domain/model/withdraw'
+import { LoadWithdrawsByUserRepository } from '../protocol/load-withdraws-by-user-repository'
+
+const makeFakeWithdraw = (): WithdrawModel => {
+  return {
+    user: 'any_id',
+    amount: 1000
+  }
+}
 
 const makeFakeRequest = (): [DepositModel, WithdrawModel] => {
   return [{
     user: 'any_user',
     amount: 1000
   }, {
-    user: 'other_user',
+    user: 'any_id',
     amount: 1000
   }]
 }
@@ -25,6 +33,15 @@ const makeFakeUser = (): UserModel => {
   }
 }
 
+const makeLoadWithdrawsByUserRepository = (): LoadWithdrawsByUserRepository => {
+  class LoadWithdrawsByUserRepositoryStub implements LoadWithdrawsByUserRepository {
+    async loadByUser (id: string): Promise<WithdrawModel[]> {
+      return new Promise(resolve => resolve([makeFakeWithdraw()]))
+    }
+  }
+  return new LoadWithdrawsByUserRepositoryStub()
+}
+
 const makeLoadUserByIdRepository = (): LoadUserByIdRepository => {
   class LoadUserByIdRepositoryStub implements LoadUserByIdRepository {
     async loadById (id: string): Promise<UserModel> {
@@ -37,14 +54,20 @@ const makeLoadUserByIdRepository = (): LoadUserByIdRepository => {
 interface SutTypes {
   sut: DbCreateTransaction,
   loadUserByIdRepositoryStub: LoadUserByIdRepository
+  loadWithdrawsByUserRepositoryStub: LoadWithdrawsByUserRepository
 }
 
 const makeSut = (): SutTypes => {
+  const loadWithdrawsByUserRepositoryStub = makeLoadWithdrawsByUserRepository()
   const loadUserByIdRepositoryStub = makeLoadUserByIdRepository()
-  const sut = new DbCreateTransaction(loadUserByIdRepositoryStub)
+  const sut = new DbCreateTransaction(
+    loadUserByIdRepositoryStub,
+    loadWithdrawsByUserRepositoryStub
+  )
   return {
     sut,
-    loadUserByIdRepositoryStub
+    loadUserByIdRepositoryStub,
+    loadWithdrawsByUserRepositoryStub
   }
 }
 
@@ -55,7 +78,7 @@ describe('DbCreateTransaction', () => {
 
     await sut.create(...makeFakeRequest())
 
-    expect(loadByIdSpy).toHaveBeenCalledWith('other_user')
+    expect(loadByIdSpy).toHaveBeenCalledWith('any_id')
   })
 
   it('Should throw unauthorized transaction error if payer is bussiness type', async () => {
@@ -73,5 +96,14 @@ describe('DbCreateTransaction', () => {
     const promise = sut.create(...makeFakeRequest())
 
     await expect(promise).rejects.toThrow(UnauthorizedTransactionError)
+  })
+
+  it('Should call withdraw repository with correct values', async () => {
+    const { sut, loadWithdrawsByUserRepositoryStub } = makeSut()
+    const loadByIdSpy = jest.spyOn(loadWithdrawsByUserRepositoryStub, 'loadByUser')
+
+    await sut.create(...makeFakeRequest())
+
+    expect(loadByIdSpy).toHaveBeenCalledWith('any_id')
   })
 })
