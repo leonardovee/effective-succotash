@@ -16,8 +16,22 @@ export class DbCreateTransaction implements CreateTransaction {
 
   async create (deposit: DepositModel, withdraw: WithdrawModel): Promise<TransactionModel> {
     const payer = await this.loadUserByIdRepository.loadById(withdraw.user)
-    if (payer.type === 'bussiness') throw new UnauthorizedTransactionError()
-    this.loadWithdrawsByUserRepository.loadByUser(payer.id)
-    this.loadDepositsByUserRepository.loadByUser(deposit.user)
+    if (payer.type === 'bussiness') {
+      throw new UnauthorizedTransactionError()
+    }
+    
+    const withdraws = await this.loadWithdrawsByUserRepository.loadByUser(payer.id)
+    const withdrawsAmount = withdraws.map((v) => v.amount).reduce((v, a) => v + a, 0)
+
+    const deposits = await this.loadDepositsByUserRepository.loadByUser(deposit.user)
+    const depositsAmount = deposits.map((v) => v.amount).reduce((v, a) => v + a, 0)
+
+    const balance = depositsAmount - withdrawsAmount
+
+    if (withdraw.amount > balance) {
+      throw new UnauthorizedTransactionError()
+    }
+
+    return null
   }
 }
