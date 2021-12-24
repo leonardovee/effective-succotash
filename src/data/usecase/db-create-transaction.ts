@@ -6,8 +6,8 @@ import { LoadUserByIdRepository } from '@/data/protocol/load-user-by-id-reposito
 import { UnauthorizedTransactionError } from '@/error/unauthorized-transaction-error'
 import { LoadWithdrawsByUserRepository } from '@/data/protocol/load-withdraws-by-user-repository'
 import { LoadDepositsByUserRepository } from '@/data/protocol/load-deposits-by-user-repository'
-import { AuthorizerRepository } from '../protocol/authorizer-repository'
-import { CreateTransactionByDepositAndWithdrawRepository } from '../protocol/create-transaction-by-deposit-and-withdraw-repository'
+import { AuthorizerRepository } from '@/data/protocol/authorizer-repository'
+import { CreateTransactionByDepositAndWithdrawRepository } from '@/data/protocol/create-transaction-by-deposit-and-withdraw-repository'
 
 export class DbCreateTransaction implements CreateTransaction {
   constructor (
