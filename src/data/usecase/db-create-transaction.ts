@@ -41,8 +41,6 @@ export class DbCreateTransaction implements CreateTransaction {
       throw new UnauthorizedTransactionError()
     }
 
-    await this.createTransactionByDepositAndWithdrawRepository.createByDepositAndWithdraw(deposit, withdraw)
-
-    return null
+    return await this.createTransactionByDepositAndWithdrawRepository.createByDepositAndWithdraw(deposit, withdraw)
   }
 }
