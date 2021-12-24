@@ -2,7 +2,7 @@ import { DepositModel } from '@/domain/model/deposit'
 import { TransactionModel } from '@/domain/model/transaction'
 import { WithdrawModel } from '@/domain/model/withdraw'
 import { CreateTransaction } from '@/domain/usecase/create-transaction'
-import { LoadUserByIdRepository } from '@/data/protocol/load-user-by-id-repository'
+import { LoadUserByEmailRepository } from '@/data/protocol/load-user-by-id-repository'
 import { UnauthorizedTransactionError } from '@/error/unauthorized-transaction-error'
 import { LoadWithdrawsByUserRepository } from '@/data/protocol/load-withdraws-by-user-repository'
 import { LoadDepositsByUserRepository } from '@/data/protocol/load-deposits-by-user-repository'
@@ -11,7 +11,7 @@ import { CreateTransactionByDepositAndWithdrawRepository } from '@/data/protocol
 
 export class DbCreateTransaction implements CreateTransaction {
   constructor (
-    private readonly loadUserByIdRepository: LoadUserByIdRepository,
+    private readonly loadUserByEmailRepository: LoadUserByEmailRepository,
     private readonly loadWithdrawsByUserRepository: LoadWithdrawsByUserRepository,
     private readonly loadDepositsByUserRepository: LoadDepositsByUserRepository,
     private readonly authorizerRepository: AuthorizerRepository,
@@ -19,7 +19,7 @@ export class DbCreateTransaction implements CreateTransaction {
   ) {}
 
   async create (deposit: DepositModel, withdraw: WithdrawModel): Promise<TransactionModel> {
-    const payer = await this.loadUserByIdRepository.loadById(withdraw.user)
+    const payer = await this.loadUserByEmailRepository.loadByEmail(withdraw.user)
     if (payer.type === 'bussiness') {
       throw new UnauthorizedTransactionError('Bussiness shoudn\'t pay users.')
     }

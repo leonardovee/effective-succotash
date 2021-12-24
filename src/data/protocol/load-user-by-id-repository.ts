@@ -1,5 +1,5 @@
-import { UserModel } from "@/domain/model/user";
+import { UserModel } from '@/domain/model/user'
 
-export interface LoadUserByIdRepository {
-  loadById: (id: string) => Promise<UserModel>
+export interface LoadUserByEmailRepository {
+  loadByEmail: (email: string) => Promise<UserModel>
 }

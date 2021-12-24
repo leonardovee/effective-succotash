@@ -1,7 +1,6 @@
 import { DbCreateTransaction } from '@/data/usecase/db-create-transaction'
 import { UserModel } from '@/domain/model/user'
-import { LoadUserByIdRepository } from '@/data/protocol/load-user-by-id-repository'
-import { UnauthorizedTransactionError } from '@/error/unauthorized-transaction-error'
+import { LoadUserByEmailRepository } from '@/data/protocol/load-user-by-id-repository'
 import { DepositModel } from '@/domain/model/deposit'
 import { WithdrawModel } from '@/domain/model/withdraw'
 import { LoadWithdrawsByUserRepository } from '@/data/protocol/load-withdraws-by-user-repository'
@@ -88,18 +87,18 @@ const makeLoadWithdrawsByUserRepository = (): LoadWithdrawsByUserRepository => {
   return new LoadWithdrawsByUserRepositoryStub()
 }
 
-const makeLoadUserByIdRepository = (): LoadUserByIdRepository => {
-  class LoadUserByIdRepositoryStub implements LoadUserByIdRepository {
-    async loadById (id: string): Promise<UserModel> {
+const makeLoadUserByEmailRepository = (): LoadUserByEmailRepository => {
+  class LoadUserByEmailRepositoryStub implements LoadUserByEmailRepository {
+    async loadByEmail (email: string): Promise<UserModel> {
       return new Promise(resolve => resolve(makeFakeUser()))
     }
   }
-  return new LoadUserByIdRepositoryStub()
+  return new LoadUserByEmailRepositoryStub()
 }
 
 interface SutTypes {
   sut: DbCreateTransaction,
-  loadUserByIdRepositoryStub: LoadUserByIdRepository
+  loadUserByEmailRepositoryStub: LoadUserByEmailRepository
   loadWithdrawsByUserRepositoryStub: LoadWithdrawsByUserRepository
   loadDepositsByUserRepositoryStub: LoadDepositsByUserRepository
   authorizerRepositoryStub: AuthorizerRepository,
@@ -111,9 +110,9 @@ const makeSut = (): SutTypes => {
   const authorizerRepositoryStub = makeAuthorizerRepository()
   const loadDepositsByUserRepositoryStub = makeLoadDepositsByUserRepository()
   const loadWithdrawsByUserRepositoryStub = makeLoadWithdrawsByUserRepository()
-  const loadUserByIdRepositoryStub = makeLoadUserByIdRepository()
+  const loadUserByEmailRepositoryStub = makeLoadUserByEmailRepository()
   const sut = new DbCreateTransaction(
-    loadUserByIdRepositoryStub,
+    loadUserByEmailRepositoryStub,
     loadWithdrawsByUserRepositoryStub,
     loadDepositsByUserRepositoryStub,
     authorizerRepositoryStub,
@@ -121,7 +120,7 @@ const makeSut = (): SutTypes => {
   )
   return {
     sut,
-    loadUserByIdRepositoryStub,
+    loadUserByEmailRepositoryStub,
     loadWithdrawsByUserRepositoryStub,
     loadDepositsByUserRepositoryStub,
     authorizerRepositoryStub,
@@ -131,17 +130,17 @@ const makeSut = (): SutTypes => {
 
 describe('DbCreateTransaction', () => {
   it('Should call user repository with correct values', async () => {
-    const { sut, loadUserByIdRepositoryStub } = makeSut()
-    const loadByIdSpy = jest.spyOn(loadUserByIdRepositoryStub, 'loadById')
+    const { sut, loadUserByEmailRepositoryStub } = makeSut()
+    const loadByEmailSpy = jest.spyOn(loadUserByEmailRepositoryStub, 'loadByEmail')
 
     await sut.create(...makeFakeRequest())
 
-    expect(loadByIdSpy).toHaveBeenCalledWith('any_id')
+    expect(loadByEmailSpy).toHaveBeenCalledWith('any_id')
   })
 
   it('Should throw unauthorized transaction error if payer is bussiness type', async () => {
-    const { sut, loadUserByIdRepositoryStub } = makeSut()
-    jest.spyOn(loadUserByIdRepositoryStub, 'loadById').mockReturnValueOnce(
+    const { sut, loadUserByEmailRepositoryStub } = makeSut()
+    jest.spyOn(loadUserByEmailRepositoryStub, 'loadByEmail').mockReturnValueOnce(
       new Promise(resolve => resolve({
         id: 'any_id',
         name: 'any_name',
@@ -158,20 +157,20 @@ describe('DbCreateTransaction', () => {
 
   it('Should call withdraw repository with correct values', async () => {
     const { sut, loadWithdrawsByUserRepositoryStub } = makeSut()
-    const loadByIdSpy = jest.spyOn(loadWithdrawsByUserRepositoryStub, 'loadByUser')
+    const loadByEmailSpy = jest.spyOn(loadWithdrawsByUserRepositoryStub, 'loadByUser')
 
     await sut.create(...makeFakeRequest())
 
-    expect(loadByIdSpy).toHaveBeenCalledWith('any_id')
+    expect(loadByEmailSpy).toHaveBeenCalledWith('any_id')
   })
 
   it('Should call deposit repository with correct values', async () => {
     const { sut, loadDepositsByUserRepositoryStub } = makeSut()
-    const loadByIdSpy = jest.spyOn(loadDepositsByUserRepositoryStub, 'loadByUser')
+    const loadByEmailSpy = jest.spyOn(loadDepositsByUserRepositoryStub, 'loadByUser')
 
     await sut.create(...makeFakeRequest())
 
-    expect(loadByIdSpy).toHaveBeenCalledWith('other_id')
+    expect(loadByEmailSpy).toHaveBeenCalledWith('other_id')
   })
 
   it('Should throw unauthorized transaction error if payer doesnt have enough balance', async () => {
@@ -190,11 +189,11 @@ describe('DbCreateTransaction', () => {
 
   it('Should call authorizer repository with correct values', async () => {
     const { sut, authorizerRepositoryStub } = makeSut()
-    const loadByIdSpy = jest.spyOn(authorizerRepositoryStub, 'authorize')
+    const loadByEmailSpy = jest.spyOn(authorizerRepositoryStub, 'authorize')
 
     await sut.create(...makeFakeRequest())
 
-    expect(loadByIdSpy).toHaveBeenCalledWith(...makeFakeRequest())
+    expect(loadByEmailSpy).toHaveBeenCalledWith(...makeFakeRequest())
   })
 
   it('Should throw unauthorized transaction error if authorizer repository returns false', async () => {
@@ -210,11 +209,11 @@ describe('DbCreateTransaction', () => {
 
   it('Should call transaction repository with correct values', async () => {
     const { sut, createTransactionByDepositAndWithdrawRepositoryStub } = makeSut()
-    const loadByIdSpy = jest.spyOn(createTransactionByDepositAndWithdrawRepositoryStub, 'createByDepositAndWithdraw')
+    const loadByEmailSpy = jest.spyOn(createTransactionByDepositAndWithdrawRepositoryStub, 'createByDepositAndWithdraw')
 
     await sut.create(...makeFakeRequest())
 
-    expect(loadByIdSpy).toHaveBeenCalledWith(...makeFakeRequest())
+    expect(loadByEmailSpy).toHaveBeenCalledWith(...makeFakeRequest())
   })
 
   it('Should return a transaction model', async () => {
