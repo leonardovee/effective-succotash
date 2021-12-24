@@ -6,6 +6,7 @@ import { DepositModel } from '@/domain/model/deposit'
 import { WithdrawModel } from '@/domain/model/withdraw'
 import { LoadWithdrawsByUserRepository } from '@/data/protocol/load-withdraws-by-user-repository'
 import { LoadDepositsByUserRepository } from '@/data/protocol/load-deposits-by-user-repository'
+import { AuthorizerRepository } from '../protocol/authorizer-repository'
 
 const makeFakeDeposit = (): DepositModel => {
   return {
@@ -41,7 +42,16 @@ const makeFakeUser = (): UserModel => {
   }
 }
 
-const makeLoadDepositsByUserRepositoryStub = (): LoadDepositsByUserRepository => {
+const makeAuthorizerRepository = (): AuthorizerRepository => {
+  class AuthorizerRepositoryStub implements AuthorizerRepository {
+    async authorize (deposit: DepositModel, withdraw: WithdrawModel): Promise<boolean> {
+      return new Promise(resolve => resolve(true))
+    }
+  }
+  return new AuthorizerRepositoryStub()
+}
+
+const makeLoadDepositsByUserRepository = (): LoadDepositsByUserRepository => {
   class LoadDepositsByUserRepositoryStub implements LoadDepositsByUserRepository {
     async loadByUser (id: string): Promise<WithdrawModel[]> {
       return new Promise(resolve => resolve([makeFakeDeposit(), makeFakeDeposit()]))
@@ -73,22 +83,26 @@ interface SutTypes {
   loadUserByIdRepositoryStub: LoadUserByIdRepository
   loadWithdrawsByUserRepositoryStub: LoadWithdrawsByUserRepository
   loadDepositsByUserRepositoryStub: LoadDepositsByUserRepository
+  authorizerRepositoryStub: AuthorizerRepository
 }
 
 const makeSut = (): SutTypes => {
-  const loadDepositsByUserRepositoryStub = makeLoadDepositsByUserRepositoryStub()
+  const authorizerRepositoryStub = makeAuthorizerRepository()
+  const loadDepositsByUserRepositoryStub = makeLoadDepositsByUserRepository()
   const loadWithdrawsByUserRepositoryStub = makeLoadWithdrawsByUserRepository()
   const loadUserByIdRepositoryStub = makeLoadUserByIdRepository()
   const sut = new DbCreateTransaction(
     loadUserByIdRepositoryStub,
     loadWithdrawsByUserRepositoryStub,
-    loadDepositsByUserRepositoryStub
+    loadDepositsByUserRepositoryStub,
+    authorizerRepositoryStub
   )
   return {
     sut,
     loadUserByIdRepositoryStub,
     loadWithdrawsByUserRepositoryStub,
-    loadDepositsByUserRepositoryStub
+    loadDepositsByUserRepositoryStub,
+    authorizerRepositoryStub
   }
 }
 
@@ -149,5 +163,14 @@ describe('DbCreateTransaction', () => {
     const promise = sut.create(...makeFakeRequest())
 
     await expect(promise).rejects.toThrow(UnauthorizedTransactionError)
+  })
+
+  it('Should call authorizer repository with correct values', async () => {
+    const { sut, authorizerRepositoryStub } = makeSut()
+    const loadByIdSpy = jest.spyOn(authorizerRepositoryStub, 'authorize')
+
+    await sut.create(...makeFakeRequest())
+
+    expect(loadByIdSpy).toHaveBeenCalledWith(...makeFakeRequest())
   })
 })
