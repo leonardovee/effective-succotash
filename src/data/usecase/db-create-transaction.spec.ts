@@ -4,7 +4,15 @@ import { LoadUserByIdRepository } from '@/data/protocol/load-user-by-id-reposito
 import { UnauthorizedTransactionError } from '@/error/unauthorized-transaction-error'
 import { DepositModel } from '@/domain/model/deposit'
 import { WithdrawModel } from '@/domain/model/withdraw'
-import { LoadWithdrawsByUserRepository } from '../protocol/load-withdraws-by-user-repository'
+import { LoadWithdrawsByUserRepository } from '@/data/protocol/load-withdraws-by-user-repository'
+import { LoadDepositsByUserRepository } from '@/data/protocol/load-deposits-by-user-repository'
+
+const makeFakeDeposit = (): DepositModel => {
+  return {
+    user: 'other_id',
+    amount: 1000
+  }
+}
 
 const makeFakeWithdraw = (): WithdrawModel => {
   return {
@@ -15,7 +23,7 @@ const makeFakeWithdraw = (): WithdrawModel => {
 
 const makeFakeRequest = (): [DepositModel, WithdrawModel] => {
   return [{
-    user: 'any_user',
+    user: 'other_id',
     amount: 1000
   }, {
     user: 'any_id',
@@ -31,6 +39,15 @@ const makeFakeUser = (): UserModel => {
     email: 'any_email',
     password: 'any_password'
   }
+}
+
+const makeLoadDepositsByUserRepositoryStub = (): LoadDepositsByUserRepository => {
+  class LoadDepositsByUserRepositoryStub implements LoadDepositsByUserRepository {
+    async loadByUser (id: string): Promise<WithdrawModel[]> {
+      return new Promise(resolve => resolve([makeFakeDeposit()]))
+    }
+  }
+  return new LoadDepositsByUserRepositoryStub()
 }
 
 const makeLoadWithdrawsByUserRepository = (): LoadWithdrawsByUserRepository => {
@@ -55,19 +72,23 @@ interface SutTypes {
   sut: DbCreateTransaction,
   loadUserByIdRepositoryStub: LoadUserByIdRepository
   loadWithdrawsByUserRepositoryStub: LoadWithdrawsByUserRepository
+  loadDepositsByUserRepositoryStub: LoadDepositsByUserRepository
 }
 
 const makeSut = (): SutTypes => {
+  const loadDepositsByUserRepositoryStub = makeLoadDepositsByUserRepositoryStub()
   const loadWithdrawsByUserRepositoryStub = makeLoadWithdrawsByUserRepository()
   const loadUserByIdRepositoryStub = makeLoadUserByIdRepository()
   const sut = new DbCreateTransaction(
     loadUserByIdRepositoryStub,
-    loadWithdrawsByUserRepositoryStub
+    loadWithdrawsByUserRepositoryStub,
+    loadDepositsByUserRepositoryStub
   )
   return {
     sut,
     loadUserByIdRepositoryStub,
-    loadWithdrawsByUserRepositoryStub
+    loadWithdrawsByUserRepositoryStub,
+    loadDepositsByUserRepositoryStub
   }
 }
 
@@ -105,5 +126,14 @@ describe('DbCreateTransaction', () => {
     await sut.create(...makeFakeRequest())
 
     expect(loadByIdSpy).toHaveBeenCalledWith('any_id')
+  })
+
+  it('Should call deposito repository with correct values', async () => {
+    const { sut, loadDepositsByUserRepositoryStub } = makeSut()
+    const loadByIdSpy = jest.spyOn(loadDepositsByUserRepositoryStub, 'loadByUser')
+
+    await sut.create(...makeFakeRequest())
+
+    expect(loadByIdSpy).toHaveBeenCalledWith('other_id')
   })
 })
