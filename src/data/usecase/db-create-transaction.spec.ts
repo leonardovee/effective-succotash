@@ -216,4 +216,12 @@ describe('DbCreateTransaction', () => {
 
     expect(loadByIdSpy).toHaveBeenCalledWith(...makeFakeRequest())
   })
+
+  it('Should return a transaction model', async () => {
+    const { sut } = makeSut()
+
+    const transaction = await sut.create(...makeFakeRequest())
+
+    expect(transaction).toEqual(makeFakeTransaction())
+  })
 })
