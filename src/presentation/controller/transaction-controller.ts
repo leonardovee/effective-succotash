@@ -3,6 +3,7 @@ import { HttpRequest, HttpResponse } from '@/presentation/protocol/http'
 import { unprocessableEntity } from '@/presentation/http/unprocessable-entity'
 import { MissingParamError } from '@/presentation/error/missing-param-error'
 import { CreateTransaction } from '@/domain/usecase/create-transaction'
+import { internalServerError } from '../http/internal-server-error'
 
 export class TransactionController implements Controller {
   constructor (
@@ -22,12 +23,16 @@ export class TransactionController implements Controller {
       return unprocessableEntity(new MissingParamError('amount'))
     }
 
-    this.createTransaction.create({
-      user: payer,
-      amount
-    }, {
-      user: payee,
-      amount
-    })
+    try {
+      await this.createTransaction.create({
+        user: payer,
+        amount
+      }, {
+        user: payee,
+        amount
+      })
+    } catch (error) {
+      return internalServerError(error)
+    }
   }
 }
