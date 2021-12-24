@@ -24,7 +24,7 @@ export class TransactionController implements Controller {
       return unprocessableEntity(new MissingParamError('amount'))
     }
 
-    let transaction = null;
+    let transaction = null
     try {
       transaction = await this.createTransaction.create({
         user: payer,
