@@ -44,7 +44,7 @@ const makeFakeUser = (): UserModel => {
 const makeLoadDepositsByUserRepositoryStub = (): LoadDepositsByUserRepository => {
   class LoadDepositsByUserRepositoryStub implements LoadDepositsByUserRepository {
     async loadByUser (id: string): Promise<WithdrawModel[]> {
-      return new Promise(resolve => resolve([makeFakeDeposit()]))
+      return new Promise(resolve => resolve([makeFakeDeposit(), makeFakeDeposit()]))
     }
   }
   return new LoadDepositsByUserRepositoryStub()
@@ -128,12 +128,26 @@ describe('DbCreateTransaction', () => {
     expect(loadByIdSpy).toHaveBeenCalledWith('any_id')
   })
 
-  it('Should call deposito repository with correct values', async () => {
+  it('Should call deposit repository with correct values', async () => {
     const { sut, loadDepositsByUserRepositoryStub } = makeSut()
     const loadByIdSpy = jest.spyOn(loadDepositsByUserRepositoryStub, 'loadByUser')
 
     await sut.create(...makeFakeRequest())
 
     expect(loadByIdSpy).toHaveBeenCalledWith('other_id')
+  })
+
+  it('Should throw unauthorized transaction error if payer doesnt have enough balance', async () => {
+    const { sut, loadWithdrawsByUserRepositoryStub, loadDepositsByUserRepositoryStub } = makeSut()
+    jest.spyOn(loadWithdrawsByUserRepositoryStub, 'loadByUser').mockReturnValueOnce(
+      new Promise(resolve => resolve([makeFakeWithdraw()]))
+    )
+    jest.spyOn(loadDepositsByUserRepositoryStub, 'loadByUser').mockReturnValueOnce(
+      new Promise(resolve => resolve([makeFakeDeposit()]))
+    )
+
+    const promise = sut.create(...makeFakeRequest())
+
+    await expect(promise).rejects.toThrow(UnauthorizedTransactionError)
   })
 })
