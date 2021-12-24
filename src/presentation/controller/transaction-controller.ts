@@ -5,9 +5,12 @@ import { MissingParamError } from '@/presentation/error/missing-param-error'
 
 export class TransactionController implements Controller {
   async handle (httpRequest: HttpRequest): Promise<HttpResponse> {
-    const { payer } = httpRequest.body
+    const { payer, payee } = httpRequest.body
     if (!payer) {
       return unprocessableEntity(new MissingParamError('payer'))
+    }
+    if (!payee) {
+      return unprocessableEntity(new MissingParamError('payee'))
     }
   }
 }
