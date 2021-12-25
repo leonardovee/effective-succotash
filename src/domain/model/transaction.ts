@@ -2,7 +2,7 @@ import { DepositModel } from './deposit'
 import { WithdrawModel } from './withdraw'
 
 export interface TransactionModel {
-  id: string
+  id?: string
   deposit: DepositModel
   withdraw: WithdrawModel
 }
