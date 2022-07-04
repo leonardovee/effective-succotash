@@ -1,6 +1,7 @@
 package com.leonardovee.effectivesuccotash.presentation.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.leonardovee.effectivesuccotash.presentation.resource.TransactionResource
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
@@ -28,6 +29,23 @@ internal class TransactionControllerTest {
 
     @Test
     fun `should return ok`() {
-        mockMvc.perform(post("/transactions").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk)
+        val transactionResource = TransactionResource("any@email.com", "other@email.com", "10.00")
+        mockMvc.perform(
+            post("/transactions").contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(transactionResource))
+        ).andExpect(status().isOk)
+    }
+
+    @Test
+    fun `should return bad request if validation fails`() {
+        data class NullableTransactionResource(
+            val payer: String?, val payee: String?, val value: String?
+        )
+
+        val transactionResource = NullableTransactionResource(null, null, null)
+        mockMvc.perform(
+            post("/transactions").contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(transactionResource))
+        ).andExpect(status().isBadRequest)
     }
 }
