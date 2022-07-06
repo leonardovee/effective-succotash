@@ -16,7 +16,6 @@ class CreateTransactionImplementation(
     override fun execute(deposit: Deposit, withdraw: Withdraw): Transaction {
         val addedDeposit = addDepositRepository.addDeposit(deposit)
         val addedWithdraw = addWithdrawRepository.addWithdraw(withdraw)
-        addTransactionRepository.addTransaction(addedDeposit, addedWithdraw)
-        return Transaction("1", "2", "3")
+        return addTransactionRepository.addTransaction(addedDeposit, addedWithdraw)
     }
 }

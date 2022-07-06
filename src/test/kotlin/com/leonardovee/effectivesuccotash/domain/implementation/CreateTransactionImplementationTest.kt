@@ -4,8 +4,10 @@ import com.leonardovee.effectivesuccotash.data.usecase.AddDepositRepository
 import com.leonardovee.effectivesuccotash.data.usecase.AddTransactionRepository
 import com.leonardovee.effectivesuccotash.data.usecase.AddWithdrawRepository
 import com.leonardovee.effectivesuccotash.domain.model.Deposit
+import com.leonardovee.effectivesuccotash.domain.model.Transaction
 import com.leonardovee.effectivesuccotash.domain.model.Withdraw
 import com.leonardovee.effectivesuccotash.presentation.resource.TransactionRequestResource
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.*
@@ -21,11 +23,14 @@ internal class CreateTransactionImplementationTest {
     private val withdraw = Withdraw(transactionRequestResource.payer, transactionRequestResource.value, null)
     private val addedDeposit = Deposit(deposit.user, deposit.value, "a1901417-dadf-46bb-846c-4f84b4e29e13")
     private val addedWithdraw = Withdraw(withdraw.user, withdraw.value, "b1bec7d7-87d9-45e9-ab37-770e28f53885")
+    private val addedTransaction =
+        Transaction("a4261502-b0ac-4c0f-af39-f50d7bfd46cf", addedDeposit.id.toString(), addedWithdraw.id.toString())
 
     @BeforeEach
     fun setUp() {
         `when`(addDepositRepository.addDeposit(deposit)).thenReturn(addedDeposit)
         `when`(addWithdrawRepository.addWithdraw(withdraw)).thenReturn(addedWithdraw)
+        `when`(addTransactionRepository.addTransaction(addedDeposit, addedWithdraw)).thenReturn(addedTransaction)
     }
 
     @Test
@@ -44,5 +49,11 @@ internal class CreateTransactionImplementationTest {
     fun `should call add transaction repository with correct values`() {
         createTransactionImplementation.execute(deposit, withdraw)
         verify(addTransactionRepository, times(1)).addTransaction(addedDeposit, addedWithdraw)
+    }
+
+    @Test
+    fun `should return transaction values`() {
+        val result = createTransactionImplementation.execute(deposit, withdraw)
+        assertEquals(addedTransaction, result)
     }
 }
