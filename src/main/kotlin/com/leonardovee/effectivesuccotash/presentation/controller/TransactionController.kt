@@ -14,8 +14,8 @@ import javax.validation.Valid
 class TransactionController(private val createTransactionUseCase: CreateTransactionUseCase) {
     @PostMapping("/transactions")
     fun create(@Valid @RequestBody transactionRequestResource: TransactionRequestResource): TransactionResponseResource {
-        val deposit = Deposit(transactionRequestResource.payee, transactionRequestResource.value)
-        val withdraw = Withdraw(transactionRequestResource.payer, transactionRequestResource.value)
+        val deposit = Deposit(transactionRequestResource.payee, transactionRequestResource.value, null)
+        val withdraw = Withdraw(transactionRequestResource.payer, transactionRequestResource.value, null)
         val transaction = createTransactionUseCase.execute(deposit, withdraw)
         return TransactionResponseResource(transaction.id)
     }

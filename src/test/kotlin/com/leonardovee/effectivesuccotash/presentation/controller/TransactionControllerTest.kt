@@ -35,9 +35,9 @@ internal class TransactionControllerTest {
 
     private var transactionRequestResource = TransactionRequestResource("any@email.com", "other@email.com", "10.00")
 
-    private var deposit = Deposit(transactionRequestResource.payee, transactionRequestResource.value)
+    private var deposit = Deposit(transactionRequestResource.payee, transactionRequestResource.value, null)
 
-    private var withdraw = Withdraw(transactionRequestResource.payer, transactionRequestResource.value)
+    private var withdraw = Withdraw(transactionRequestResource.payer, transactionRequestResource.value, null)
 
     @BeforeEach
     fun setUp() {
