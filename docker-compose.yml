@@ -1,16 +1,6 @@
 version: "3.5"
 
 services:
-  effective-succotash-api:
-    container_name: effective-succotash-api
-    build: .
-    image: leonardovee/effective-succotash
-    ports:
-      - "8080:8080"
-    networks:
-      - effective-succotash
-    restart: unless-stopped
-
   effective-succotash-postgres:
     container_name: effective-succotash-postgres
     image: postgres
@@ -22,8 +12,6 @@ services:
       - postgres:/data/postgres
     ports:
       - "5432:5432"
-    networks:
-      - effective-succotash
     restart: unless-stopped
 
   effective-succotash-pgadmin:
@@ -35,11 +23,8 @@ services:
       PGADMIN_CONFIG_SERVER_MODE: 'False'
     volumes:
       - pgadmin:/var/lib/pgadmin
-
     ports:
       - "${PGADMIN_PORT:-5050}:80"
-    networks:
-      - effective-succotash
     restart: unless-stopped
 
 networks:
