@@ -9,5 +9,5 @@ import org.springframework.context.annotation.ComponentScan
 class EffectiveSuccotashApplication
 
 fun main(args: Array<String>) {
-	runApplication<EffectiveSuccotashApplication>(*args)
+    runApplication<EffectiveSuccotashApplication>(*args)
 }

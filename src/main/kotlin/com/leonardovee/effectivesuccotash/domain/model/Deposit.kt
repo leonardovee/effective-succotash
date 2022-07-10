@@ -1,5 +1,5 @@
 package com.leonardovee.effectivesuccotash.domain.model
 
 data class Deposit(
-    val user: String, val value: String, val id: String?
+    val user: String, val value: String, var id: String?
 )
