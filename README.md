@@ -1,4 +1,4 @@
-# The effective succotash
+# The effective succotash [![Build](https://github.com/leonardovee/effective-succotash/actions/workflows/build.yml/badge.svg)](https://github.com/leonardovee/effective-succotash/actions/workflows/build.yml) [![Test](https://github.com/leonardovee/effective-succotash/actions/workflows/test.yml/badge.svg)](https://github.com/leonardovee/effective-succotash/actions/workflows/test.yml)
 
 Effective succotash, apart from the dish, is a proof of concept of a payment system written in PHP, and then in Typescript, and now in Kotlin.
 
